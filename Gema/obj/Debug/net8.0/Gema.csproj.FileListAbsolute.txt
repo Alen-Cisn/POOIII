@@ -1,0 +1,12 @@
+/home/tangra/projects/Gema/bin/Debug/net8.0/Gema.deps.json
+/home/tangra/projects/Gema/bin/Debug/net8.0/Gema.dll
+/home/tangra/projects/Gema/bin/Debug/net8.0/Gema.pdb
+/home/tangra/projects/Gema/obj/Debug/net8.0/Gema.csproj.AssemblyReference.cache
+/home/tangra/projects/Gema/obj/Debug/net8.0/Gema.GeneratedMSBuildEditorConfig.editorconfig
+/home/tangra/projects/Gema/obj/Debug/net8.0/Gema.AssemblyInfoInputs.cache
+/home/tangra/projects/Gema/obj/Debug/net8.0/Gema.AssemblyInfo.cs
+/home/tangra/projects/Gema/obj/Debug/net8.0/Gema.csproj.CoreCompileInputs.cache
+/home/tangra/projects/Gema/obj/Debug/net8.0/Gema.dll
+/home/tangra/projects/Gema/obj/Debug/net8.0/refint/Gema.dll
+/home/tangra/projects/Gema/obj/Debug/net8.0/Gema.pdb
+/home/tangra/projects/Gema/obj/Debug/net8.0/ref/Gema.dll
