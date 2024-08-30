@@ -6,7 +6,7 @@ public class Program {
 	
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-		int PUERTO = 60001;
+		int PUERTO = 60002;
 		System.out.print("\n Arranca Servidor");
 		ServerSocket socketServidor = null;
 		try {
@@ -14,6 +14,7 @@ public class Program {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
+		SharedBuffer buffer = new SharedBuffer(100);
 		while (true) {
 			Socket cliente = null;
 			try {
@@ -21,7 +22,7 @@ public class Program {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-			ServidorEscucha nuevoCliente = new ServidorEscucha(cliente);
+			ServidorEscucha nuevoCliente = new ServidorEscucha(cliente, buffer);
 			Thread hilo = new Thread(nuevoCliente);
 			hilo.start();
 		}

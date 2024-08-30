@@ -7,10 +7,12 @@ public class ServidorEscucha implements Runnable {
 	Socket elCliente;
 	DataOutputStream salida;
 	BufferedReader entrada;
+	SharedBuffer buffer;
 	String leido;
 
-	ServidorEscucha(Socket cliente) {
+	ServidorEscucha(Socket cliente, SharedBuffer buffer) {
 		elCliente = cliente;
+		this.buffer = buffer;
 	}
 
 	public void run() {
@@ -23,6 +25,7 @@ public class ServidorEscucha implements Runnable {
 				entrada = new BufferedReader(new InputStreamReader(elCliente.getInputStream()));
 				System.out.print("\nEsperando");
 				leido = entrada.readLine();
+				buffer.produce(leido);
 				System.out.print("\nLeido" + leido + "\n");
 				salida.writeBytes("\nLeido" + leido + "\n");
 			}
