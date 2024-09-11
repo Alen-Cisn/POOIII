@@ -1,35 +1,66 @@
 ﻿using System.ServiceProcess;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Gema.Server;
 
 namespace Gema;
 
 public sealed class Gema : ServiceBase
 {
-    Server? server;
+    public static void Main(string[] args)
+    {
+        var isWindowsService = !Environment.UserInteractive;
+        var gema = new Gema(args);
+
+        if (isWindowsService && OperatingSystem.IsWindows())
+        {
+            Run(gema);
+        }
+        else
+        {
+            gema.OnStart(args);
+            gema.OnStop();
+        }
+    }
+
+    private Gema(string[] args)
+    {
+
+        var services = new ServiceCollection();
+        services.AddLogging(builder =>
+        {
+            builder.AddConsole();
+        });
+        
+        ServerBuilder serverBuilder = new(services);
+        serverBuilder.AddArgs(args);
+
+        ServerBase = serverBuilder.Build();
+    }
+
+    readonly ServerBase ServerBase;
 
     protected override void OnStart(string[] args)
     {
         try
         {
-            var services = new ServiceCollection();
-            services.AddLogging(builder =>
-            {
-                builder.AddConsole();
-            });
-
-            server = new(args);
-            server.RunServer();
+            ServerBase.RunServer();
         }
-        catch (System.Exception)
+        catch (Exception)
         {
-            Stop();
             throw;
+        }
+        finally
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                Stop();
+            }
         }
     }
 
     protected override void OnStop()
     {
-        server?.Dispose();
+        ServerBase.Dispose();
     }
 }

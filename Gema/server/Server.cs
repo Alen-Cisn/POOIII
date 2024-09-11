@@ -5,24 +5,30 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 
-namespace Gema;
+namespace Gema.Server;
 
-public class Server : IDisposable
+public partial class ServerBase : IDisposable
 {
-    private TcpListener tcpListener;
-    private X509Certificate2 serverCertificate;
+    private readonly TcpListener TcpListener;
+    private readonly X509Certificate2 ServerCertificate;
 
-    public Server(string[] args)
+    private readonly ILogger<ServerBase> Logger;
+
+    public ServerBase(ILogger<ServerBase> logger, string[] args)
     {
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddCommandLine(args)
             .Build();
 
+        Logger = logger;
+
         if (!ValidateConfiguration(configuration))
         {
-            throw new FormatException("Configuration was incorrectly set.");
+            throw new FormatException("Configuration was set incorrectly.");
         }
 
         byte[] iPAddressBytes = GetIpFromDecimalRepresentation(configuration["address"]!);
@@ -30,13 +36,13 @@ public class Server : IDisposable
         var address = new IPAddress(iPAddressBytes);
         var port = int.Parse(configuration["port"]!);
 
-        tcpListener = new TcpListener(address, port);
-        serverCertificate = GetCertificateFromStore("CERT");
+        TcpListener = new TcpListener(address, port);
+        ServerCertificate = GetCertificateFromStore("localhost");
     }
 
-    private static X509Certificate2 GetCertificateFromStore(string certName)
+    private X509Certificate2 GetCertificateFromStore(string certName)
     {
-        X509Store store = new X509Store(StoreLocation.CurrentUser);
+        X509Store store = new(StoreLocation.CurrentUser);
         try
         {
             store.Open(OpenFlags.ReadOnly);
@@ -55,7 +61,10 @@ public class Server : IDisposable
             );
 
             if (signingCert.Count == 0)
-                return null!;
+            {
+                Logger.LogError("No certification for {} was found.", certName);
+                throw new FileNotFoundException($"No certification for {certName} was found.", certName);
+            }
 
             return signingCert[0];
         }
@@ -69,10 +78,10 @@ public class Server : IDisposable
     {
         try
         {
-            tcpListener.Start();
+            TcpListener.Start();
             while (true)
             {
-                var client = await tcpListener.AcceptTcpClientAsync();
+                var client = await TcpListener.AcceptTcpClientAsync();
                 //new Thread(() => HandleRequest(client)).Start();
                 _ = HandleRequestAsync(client);
             }
@@ -86,7 +95,7 @@ public class Server : IDisposable
     private async Task HandleRequestAsync(TcpClient client)
     {
         var readBuffer = new byte[1024];
-        Console.WriteLine("Connected!");
+
         using (var stream = client.GetStream())
         {
             var sslStream = new SslStream(stream, false);
@@ -95,12 +104,12 @@ public class Server : IDisposable
             {
                 const string newLine = "\r\n";
                 await sslStream.AuthenticateAsServerAsync(
-                    serverCertificate,
+                    ServerCertificate,
                     clientCertificateRequired: true,
                     checkCertificateRevocation: true
                 );
 
-                await sslStream.ReadAsync(readBuffer, 0, 1024);
+                await sslStream.ReadAsync(readBuffer.AsMemory(0, 1024));
                 var uriString = Encoding.UTF8.GetString(readBuffer, 0, 1024).Split(newLine)[0];
 
                 Console.WriteLine(uriString);
@@ -127,47 +136,51 @@ public class Server : IDisposable
     }
 
     private static byte[] GetIpFromDecimalRepresentation(string decimalRepresentation)
+        => decimalRepresentation.Split('.').Select(byte.Parse).ToArray();
+    
+    private bool ValidateConfiguration(IConfiguration configuration)
     {
-        string[] numbers = decimalRepresentation.Split('.');
-
-        byte[] ret = new byte[4];
-
-        for (int i = 0; i < 4; i++)
+        bool isValid = true;
+        if (configuration["address"] == null)
         {
-            ret[i] = byte.Parse(numbers[i]);
+            Logger.LogError("IP address hasn't been set in settings.");
+            isValid = false;
+        }
+        else if (!ValidateIpAddress(configuration["address"]!))
+        {
+            Logger.LogError("IP address isn't in the correct IPv4 format.");
+            isValid = false;
+        }
+        
+        if (configuration["port"] == null)
+        {
+            Logger.LogError("Port hasn't been set in settings.");
+            isValid = false;
+        }
+        else if (!int.TryParse(configuration["port"], out int port))
+        {
+            Logger.LogError("Port number isn't a number.");
+            isValid = false;
+        }
+        else if (1024 >= port || port >= 65535 )
+        {
+            Logger.LogError("Port number should be between 1024 and 65535.");
+            isValid = false;
         }
 
-        return ret;
-    }
-
-    private static bool ValidateConfiguration(IConfiguration configuration)
-    {
-        if (!ValidateIpAddress(configuration["address"]!))
-        {
-            return false;
-        }
-
-        if (!int.TryParse(configuration["port"], out _))
-        {
-            return false;
-        }
-
-        return true;
+        return isValid;
     }
 
     private static bool ValidateIpAddress(string ipAddressDecimalRepresentation)
-    {
-        return Regex
-                .Matches(
-                    ipAddressDecimalRepresentation,
-                    """^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"""
-                )
-                .Count() == 1;
-    }
+        => Ipv4Regex().Matches(ipAddressDecimalRepresentation).Count == 1;
 
     public void Dispose()
     {
-        tcpListener.Stop();
-        tcpListener.Dispose();
+        TcpListener.Stop();
+        TcpListener.Dispose();
     }
+
+    [GeneratedRegex("""^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$""")]
+    private static partial Regex Ipv4Regex();
+
 }
