@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -37,7 +38,7 @@ public partial class ServerBase : IDisposable
         var port = int.Parse(configuration["port"]!);
 
         TcpListener = new TcpListener(address, port);
-        ServerCertificate = GetCertificateFromStore("localhost");
+        ServerCertificate = GetCertificateFromStore("CN=localhost");
     }
 
     private X509Certificate2 GetCertificateFromStore(string certName)
@@ -74,16 +75,21 @@ public partial class ServerBase : IDisposable
         }
     }
 
-    internal async void RunServer()
+    internal void RunServer()
     {
         try
         {
             TcpListener.Start();
+            Logger.LogInformation("Server running!");
             while (true)
             {
-                var client = await TcpListener.AcceptTcpClientAsync();
-                //new Thread(() => HandleRequest(client)).Start();
-                _ = HandleRequestAsync(client);
+                var client = TcpListener.AcceptTcpClient();
+                if (client == null)
+                {
+                    continue;
+                }
+                _ = HandleRequestAsync(client!);
+                Logger.LogInformation("Client request handled!");
             }
         }
         catch (SocketException)
@@ -106,7 +112,8 @@ public partial class ServerBase : IDisposable
                 await sslStream.AuthenticateAsServerAsync(
                     ServerCertificate,
                     clientCertificateRequired: true,
-                    checkCertificateRevocation: true
+                    checkCertificateRevocation: true,
+                    enabledSslProtocols: SslProtocols.Tls13
                 );
 
                 await sslStream.ReadAsync(readBuffer.AsMemory(0, 1024));
@@ -115,10 +122,13 @@ public partial class ServerBase : IDisposable
                 Console.WriteLine(uriString);
 
                 var uri = new Uri(uriString);
+                // Prepare a response
+                string responseBody = "Check!: " + uri.ToString();
 
-                //[...]
-                // will be covered in the next sections
-                //[...]
+                // Send the response back to the client
+                byte[] responseBytes = Encoding.UTF8.GetBytes(responseBody);
+                await sslStream.WriteAsync(responseBytes);
+                await sslStream.FlushAsync(); // Ensure the data is sent
             }
             catch (IOException ex)
             {

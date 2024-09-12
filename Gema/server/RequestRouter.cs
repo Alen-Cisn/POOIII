@@ -1,6 +1,8 @@
+// namespace Gema.Server;
+
 // public class RequestRouter
 // {
-//     private Dictionary<string, Func<Request, IResponse>> _handlers = new();
+//     private readonly Dictionary<string, Func<Request, IResponse>> _handlers = new();
 
 //     public void RegisterHandler(string path, Func<Request, IResponse> handler)
 //     {
