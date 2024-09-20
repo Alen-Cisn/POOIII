@@ -6,212 +6,210 @@ using System.Threading;
 
 namespace TcpIP
 {
-    public class Server
+  public class Server
+  {
+    private static TcpListener serverSocket = null;
+    private static readonly Dictionary<int, Queue<string>> clientes = [];
+
+    public static void Main(string[] args)
     {
-        private static TcpListener serverSocket = null;
-        private static Dictionary<int, Queue<string>> clientes = new Dictionary<int, Queue<string>>();
+      int PORT = 60001;
+      Console.WriteLine("Inicializando servidor...");
 
-        public static void Main(string[] args)
+      try
+      {
+        serverSocket = new TcpListener(IPAddress.Any, PORT);
+        serverSocket.Start();
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e.Message);
+      }
+
+      while (true)
+      {
+        TcpClient cliente = null;
+        try
         {
-            int PORT = 60001;
-            Console.WriteLine("Inicializando servidor...");
-
-            try
-            {
-                serverSocket = new TcpListener(IPAddress.Any, PORT);
-                serverSocket.Start();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            while (true)
-            {
-                TcpClient cliente = null;
-                try
-                {
-                    cliente = serverSocket.AcceptTcpClient();
-                }
-                catch (Exception e)
-                {
-
-                    Console.WriteLine(e.Message);
-                }
-
-                ServidorEscucha nuevoCliente = new ServidorEscucha(cliente, clientes);
-                Thread hilo = new Thread(new ThreadStart(nuevoCliente.Run));
-                hilo.Start();
-            }
+          cliente = serverSocket.AcceptTcpClient();
         }
+        catch (Exception e)
+        {
+
+          Console.WriteLine(e.Message);
+        }
+
+        ServidorEscucha nuevoCliente = new ServidorEscucha(cliente, clientes);
+        Thread hilo = new Thread(new ThreadStart(nuevoCliente.Run));
+        hilo.Start();
+      }
     }
+  }
 
-    public class ServidorEscucha
+  public class ServidorEscucha(TcpClient cliente, Dictionary<int, Queue<string>> clientes) : IDisposable
+  {
+    private readonly TcpClient client = cliente;
+    private StreamReader entrada;
+    private StreamWriter salida;
+    private string line;
+    private Dictionary<int, Queue<string>> clientes = clientes;
+
+    public void Run()
     {
-        private TcpClient client;
-        private StreamReader entrada;
-        private StreamWriter salida;
-        private string line;
-        private Dictionary<int, Queue<string>> clientes;
+      int clientID = ((IPEndPoint)client.Client.RemoteEndPoint).Port;
+      Console.WriteLine("Entro: [" + clientID + "] IP: " + ((IPEndPoint)client.Client.RemoteEndPoint).Address);
 
-        public ServidorEscucha(TcpClient cliente, Dictionary<int, Queue<string>> clientes)
+      try
+      {
+        NetworkStream stream = client.GetStream();
+        salida = new StreamWriter(stream);
+        entrada = new StreamReader(stream);
+        salida.AutoFlush = true;
+
+        salida.WriteLine("Conexion establecida");
+        Thread.Sleep(5000);
+
+        lock (clientes)
         {
-            this.client = cliente;
-            this.clientes = clientes;
+          clientes[clientID] = new Queue<string>();
         }
 
-        public void Run()
+        while (true)
         {
-            int clientID = ((IPEndPoint)client.Client.RemoteEndPoint).Port;
-            Console.WriteLine("Entro: [" + clientID + "] IP: " + ((IPEndPoint)client.Client.RemoteEndPoint).Address);
+          Console.WriteLine("Esperando...");
+          salida.WriteLine("Esperando...");
 
-            try
+          line = entrada.ReadLine();
+
+          if (line == null)
+          {
+            Console.WriteLine("El cliente cerro la conexion");
+            break;
+          }
+
+          if (line.StartsWith("/send"))
+          {
+            string[] sections = line.Split(' ', 3);
+            if (sections.Length < 3)
             {
-                NetworkStream stream = client.GetStream();
-                salida = new StreamWriter(stream);
-                entrada = new StreamReader(stream);
-                salida.AutoFlush = true;
+              salida.WriteLine("Error de sintaxis: pruebe usando /send <ID_destinatario> <mensaje>");
+              continue;
+            }
 
-                salida.WriteLine("Conexion establecida");
-                Thread.Sleep(5000);
+            string mensaje = sections[2];
 
+            if (sections[1].Equals("all"))
+            {
+              if (clientes.Count == 1)
+              {
+                salida.WriteLine("No hay mas clientes conectados");
+              }
+              else
+              {
                 lock (clientes)
                 {
-                    clientes[clientID] = new Queue<string>();
+                  foreach (var id in clientes)
+                  {
+                    if (id.Key != clientID)
+                    {
+                      id.Value.Enqueue("Mensaje de " + clientID + ": " + mensaje);
+                    }
+                  }
                 }
-
-                while (true)
-                {
-                    Console.WriteLine("Esperando...");
-                    salida.WriteLine("Esperando...");
-
-                    line = entrada.ReadLine();
-
-                    if (line == null)
-                    {
-                        Console.WriteLine("El cliente cerro la conexion");
-                        break;
-                    }
-
-                    if (line.StartsWith("/send"))
-                    {
-                        string[] sections = line.Split(' ', 3);
-                        if (sections.Length < 3)
-                        {
-                            salida.WriteLine("Error de sintaxis: pruebe usando /send <ID_destinatario> <mensaje>");
-                            continue;
-                        }
-
-                        string mensaje = sections[2];
-
-                        if (sections[1].Equals("all"))
-                        {
-                            if (clientes.Count == 1)
-                            {
-                                salida.WriteLine("No hay mas clientes conectados");
-                            }
-                            else
-                            {
-                                lock (clientes)
-                                {
-                                    foreach (var id in clientes)
-                                    {
-                                        if (id.Key != clientID)
-                                        {
-                                            id.Value.Enqueue("Mensaje de " + clientID + ": " + mensaje);
-                                        }
-                                    }
-                                }
-                                salida.WriteLine("Mensaje enviado a todos los conectados");
-                            }
-                        }
-                        else
-                        {
-                            if (int.TryParse(sections[1], out int destinatario))
-                            {
-                                lock (clientes)
-                                {
-                                    if (clientes.ContainsKey(destinatario))
-                                    {
-                                        clientes[destinatario].Enqueue("Mensaje de " + clientID + ": " + mensaje);
-                                        salida.WriteLine("Mensaje enviado a " + destinatario);
-                                    }
-                                    else
-                                    {
-                                        salida.WriteLine("El destinatario " + destinatario + " no se encuentra");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                salida.WriteLine("Error: el formato del destinatario no es correcto");
-                            }
-                        }
-                    }
-                    else if (line.Equals("/check"))
-                    {
-                        lock (clientes)
-                        {
-                            if (clientes[clientID].Count == 0)
-                            {
-                                salida.WriteLine("No hay nuevos mensajes");
-                            }
-                            else
-                            {
-                                salida.WriteLine(clientes[clientID].Dequeue());
-                            }
-                        }
-                    }
-                    else if (line.Equals("/close"))
-                    {
-                        salida.WriteLine("Cerrando conexion...");
-                        break;
-                    }
-                    else if (line.Equals("/list"))
-                    {
-                        salida.WriteLine("Clientes conectados: [yo: " + clientID + "]");
-                        lock (clientes)
-                        {
-                            foreach (var cliente in clientes.Keys)
-                            {
-                                if (cliente != clientID)
-                                {
-                                    salida.WriteLine(" [" + cliente + "]");
-                                }
-                            }
-                            salida.WriteLine();
-                        }
-                    }
-                    else if (line.Equals("/help"))
-                    {
-                        salida.WriteLine("Lista de comandos:\n\r" +
-                            "* /help\n\r" +
-                            "* /send <ID_destinatario> <mensaje>\n\r" +
-                            "* /check\n\r" +
-                            "* /list\n\r" +
-                            "* /close");
-                    }
-                    else
-                    {
-                        salida.WriteLine("Leido " + line);
-                    }
-                }
-
+                salida.WriteLine("Mensaje enviado a todos los conectados");
+              }
+            }
+            else
+            {
+              if (int.TryParse(sections[1], out int destinatario))
+              {
                 lock (clientes)
                 {
-                    clientes.Remove(clientID);
+                  if (clientes.TryGetValue(destinatario, out Queue<string>? value))
+                  {
+                    value.Enqueue("Mensaje de " + clientID + ": " + mensaje);
+                    salida.WriteLine("Mensaje enviado a " + destinatario);
+                  }
+                  else
+                  {
+                    salida.WriteLine("El destinatario " + destinatario + " no se encuentra");
+                  }
                 }
-
-                entrada.Close();
-                salida.Close();
-                client.Close();
-                Console.WriteLine("Conexion cerrada con " + clientID);
+              }
+              else
+              {
+                salida.WriteLine("Error: el formato del destinatario no es correcto");
+              }
             }
-            catch (Exception e)
+          }
+          else if (line.Equals("/check"))
+          {
+            lock (clientes)
             {
-                Console.WriteLine("Error: " + e.Message);
+              if (clientes[clientID].Count == 0)
+              {
+                salida.WriteLine("No hay nuevos mensajes");
+              }
+              else
+              {
+                salida.WriteLine(clientes[clientID].Dequeue());
+              }
             }
+          }
+          else if (line.Equals("/close"))
+          {
+            salida.WriteLine("Cerrando conexion...");
+            break;
+          }
+          else if (line.Equals("/list"))
+          {
+            salida.WriteLine("Clientes conectados: [yo: " + clientID + "]");
+            lock (clientes)
+            {
+              foreach (var cliente in clientes.Keys)
+              {
+                if (cliente != clientID)
+                {
+                  salida.WriteLine(" [" + cliente + "]");
+                }
+              }
+              salida.WriteLine();
+            }
+          }
+          else if (line.Equals("/help"))
+          {
+            salida.WriteLine("Lista de comandos:\n\r" +
+                "* /help\n\r" +
+                "* /send <ID_destinatario> <mensaje>\n\r" +
+                "* /check\n\r" +
+                "* /list\n\r" +
+                "* /close");
+          }
+          else
+          {
+            salida.WriteLine("Leido " + line);
+          }
         }
 
+        lock (clientes)
+        {
+          clientes.Remove(clientID);
+        }
+
+        entrada.Close();
+        salida.Close();
+        client.Close();
+        Console.WriteLine("Conexion cerrada con " + clientID);
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine("Error: " + e.Message);
+      }
     }
+
+    public void Dispose()
+    {
+      throw new NotImplementedException();
+    }
+  }
 }

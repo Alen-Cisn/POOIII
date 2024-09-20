@@ -1,66 +1,42 @@
-﻿using System.ServiceProcess;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Gema.Server;
+﻿using Gema.Server;
 
 namespace Gema;
 
-public sealed class Gema : ServiceBase
+public sealed class Gema(ServerBase serverBase) : BackgroundService
 {
-    public static void Main(string[] args)
+  private readonly ServerBase _serverBase = serverBase ?? throw new ArgumentNullException(nameof(serverBase));
+
+  public static void Main(string[] args)
+  {
+    var builder = Host.CreateApplicationBuilder(args);
+    builder.Services.AddLogging(loggingBuilder =>
     {
-        var isWindowsService = !Environment.UserInteractive;
-        var gema = new Gema(args);
+      loggingBuilder.AddConsole();
+    });
 
-        if (isWindowsService && OperatingSystem.IsWindows())
-        {
-            Run(gema);
-        }
-        else
-        {
-            gema.OnStart(args);
-            gema.OnStop();
-        }
-    }
-
-    private Gema(string[] args)
+    builder.Services.AddSingleton(sp =>
     {
 
-        var services = new ServiceCollection();
-        services.AddLogging(builder =>
-        {
-            builder.AddConsole();
-        });
-        
-        ServerBuilder serverBuilder = new(services);
-        serverBuilder.AddArgs(args);
+      var logger = sp.GetRequiredService<ILogger<ServerBase>>();
+      return new ServerBase(logger, args);
+    });
 
-        ServerBase = serverBuilder.Build();
-    }
+    builder.Services.AddHostedService<Gema>();
 
-    readonly ServerBase ServerBase;
+    var host = builder.Build();
+    host.Run();
+  }
 
-    protected override void OnStart(string[] args)
+  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+  {
+    try
     {
-        try
-        {
-            ServerBase.RunServer();
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-        finally
-        {
-            if (OperatingSystem.IsWindows())
-            {
-                Stop();
-            }
-        }
+      await Task.Run(_serverBase.RunServer, stoppingToken);
     }
-
-    protected override void OnStop()
+    catch (Exception)
     {
-        ServerBase.Dispose();
+      // Log the exception or handle it as needed
+      throw;
     }
+  }
 }
