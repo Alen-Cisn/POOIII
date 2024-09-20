@@ -4,55 +4,57 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
 
 namespace Gema.Server;
 
 public partial class ServerBase : IDisposable
 {
-  private readonly TcpListener TcpListener;
-  private readonly X509Certificate2 ServerCertificate;
-
-  private readonly ILogger<ServerBase> Logger;
+  private readonly TcpListener _tcpListener;
+  private readonly X509Certificate2 _serverCertificate;
+  private readonly ILogger<ServerBase> _logger;
 
   public ServerBase(ILogger<ServerBase> logger, string[] args)
   {
+    _logger = logger;
+    var configuration = LoadConfiguration(args);
+    ValidateConfiguration(configuration);
+
+    var address = GetIPAddress(configuration["address"]!);
+    var port = int.Parse(configuration["port"]!);
+
+    _tcpListener = new TcpListener(address, port);
+    _serverCertificate = GetCertificateFromStore(configuration["certificationFingerprint"]!);
+  }
+
+  private static IConfiguration LoadConfiguration(string[] args)
+  {
     var configurationBuilder = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .AddCommandLine(args);
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 #if DEBUG
     configurationBuilder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
 #endif
 
-    var configuration = configurationBuilder.Build();
+    configurationBuilder.AddCommandLine(args);
+    return configurationBuilder.Build();
+  }
 
-    Logger = logger;
-
-    if (!ValidateConfiguration(configuration))
+  private void ValidateConfiguration(IConfiguration configuration)
+  {
+    var validator = new ConfigurationValidator(_logger);
+    if (!validator.Validate(configuration))
     {
       throw new FormatException("Configuration was set incorrectly.");
     }
-
-    byte[] iPAddressBytes = GetIpFromDecimalRepresentation(configuration["address"]!);
-
-    var address = new IPAddress(iPAddressBytes);
-    var port = int.Parse(configuration["port"]!);
-
-    TcpListener = new TcpListener(address, port);
-    ServerCertificate = GetCertificateFromStore(configuration["certificationFingerprint"]!);
   }
 
   private X509Certificate2 GetCertificateFromStore(string fingerPrint)
   {
     fingerPrint = fingerPrint.Replace(":", "");
 
-    Logger.LogInformation("Looking for certification with fingerPrint \"{}\"", fingerPrint);
+    _logger.LogInformation("Looking for certification with fingerPrint \"{}\"", fingerPrint);
     X509Store store = new(StoreLocation.CurrentUser);
-    Logger.LogDebug("Certification store location: {}", store.Location.ToString());
+    _logger.LogDebug("Certification store location: {}", store.Location.ToString());
     try
     {
       store.Open(OpenFlags.ReadOnly);
@@ -72,7 +74,7 @@ public partial class ServerBase : IDisposable
 
       if (signingCert.Count == 0)
       {
-        Logger.LogError("No certification for {} was found.", fingerPrint);
+        _logger.LogError("No certification for {} was found.", fingerPrint);
         throw new FileNotFoundException($"No certification for {fingerPrint} was found.", fingerPrint);
       }
 
@@ -84,28 +86,22 @@ public partial class ServerBase : IDisposable
     }
   }
 
-  internal void RunServer()
+  internal async Task RunServerAsync()
   {
     try
     {
-      TcpListener.Start();
-      Logger.LogInformation("Server running!");
-      
+      _tcpListener.Start();
+      _logger.LogInformation("Server running!");
+
       while (true)
       {
-        var client = TcpListener.AcceptTcpClient();
-
-        if (client == null)
-        {
-          continue;
-        }
-
-        _ = HandleRequestAsync(client!);
-        Logger.LogInformation("Client request handled!");
+        var client = await _tcpListener.AcceptTcpClientAsync();
+        _ = HandleRequestAsync(client);
       }
     }
-    catch (SocketException)
+    catch (SocketException ex)
     {
+      _logger.LogError("SocketException: {Message}", ex.Message);
       throw;
     }
   }
@@ -116,31 +112,13 @@ public partial class ServerBase : IDisposable
 
     using (var stream = client.GetStream())
     {
-      string dbPath = "~/.local/share/leveldb";
-
-      // Open the LevelDB database
-
-      // using (var db = new DB(new Options { CreateIfMissing = true }, dbPath))
-      {
-        // Put a key-value pair into the database
-        // db.Put("key1", "value1");
-        // Console.WriteLine("Inserted: key1 -> value1");
-
-        // // Retrieve the value for the key
-        // string value = db.Get("key1");
-        // Console.WriteLine($"Retrieved: key1 -> {value}");
-
-        // // Optionally, delete a key
-        // db.Delete("key1");
-        // Console.WriteLine("Deleted: key1");
-      }
       var sslStream = new SslStream(stream, false);
 
       try
       {
         const string newLine = "\r\n";
         await sslStream.AuthenticateAsServerAsync(
-            ServerCertificate,
+            _serverCertificate,
             //TODO: Hacer que esto sea requerido. Hay que reparar los certificados SSL.
             clientCertificateRequired: false,
             checkCertificateRevocation: false,
@@ -150,9 +128,9 @@ public partial class ServerBase : IDisposable
         await sslStream.ReadAsync(readBuffer.AsMemory(0, 1024));
         var uriString = Encoding.UTF8.GetString(readBuffer, 0, 1024).Split(newLine)[0];
 
-        Console.WriteLine(uriString);
 
         var uri = new Uri(uriString);
+        _logger.LogInformation("Got uri: {}", uri.ToString());
         // Prepare a response
         string responseBody = "Check!: " + uri.ToString();
 
@@ -163,11 +141,11 @@ public partial class ServerBase : IDisposable
       }
       catch (IOException ex)
       {
-        Logger.LogError("IOException: {}", ex.ToString());
+        _logger.LogError("IOException: {}", ex.ToString());
       }
       catch (Exception ex)
       {
-        Logger.LogError("Exception: {}", ex.ToString());
+        _logger.LogError("Exception: {}", ex.ToString());
       }
       finally
       {
@@ -180,69 +158,15 @@ public partial class ServerBase : IDisposable
     client.Dispose();
   }
 
-  private static byte[] GetIpFromDecimalRepresentation(string decimalRepresentation)
-      => decimalRepresentation.Split('.').Select(byte.Parse).ToArray();
-
-  private bool ValidateConfiguration(IConfiguration configuration)
-  {
-    bool isValid = true;
-    if (configuration["address"] == null)
-    {
-      Logger.LogError("IP address hasn't been set in settings.");
-      isValid = false;
-    }
-    else if (!ValidateIpAddress(configuration["address"]!))
-    {
-      Logger.LogError("IP address isn't in the correct IPv4 format.");
-      isValid = false;
-    }
-
-    if (configuration["port"] == null)
-    {
-      Logger.LogError("Port hasn't been set in settings.");
-      isValid = false;
-    }
-    else if (!int.TryParse(configuration["port"], out int port))
-    {
-      Logger.LogError("Port number isn't a number.");
-      isValid = false;
-    }
-    else if (1024 >= port || port >= 65535)
-    {
-      Logger.LogError("Port number should be between 1024 and 65535.");
-      isValid = false;
-    }
-
-    if (configuration["certificationFingerprint"] == null)
-    {
-      Logger.LogError("Certification fingerprint hasn't been set in settings.");
-      isValid = false;
-    }
-    else if (!ValidateFingerprint(configuration["certificationFingerprint"]!))
-    {
-      Logger.LogError("Certification fingerprint isn't in the correct format.");
-      isValid = false;
-    }
-
-    return isValid;
-  }
-
-  private static bool ValidateIpAddress(string ipAddressDecimalRepresentation)
-      => Ipv4Regex().Matches(ipAddressDecimalRepresentation).Count == 1;
-
-  private static bool ValidateFingerprint(string fingerprint)
-      => FingerprintRegex().Matches(fingerprint).Count == 1;
-
   public void Dispose()
   {
-    TcpListener.Stop();
-    TcpListener.Dispose();
+    _tcpListener.Stop();
+    _tcpListener.Dispose();
   }
 
-  [GeneratedRegex("""^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$""")]
-  private static partial Regex Ipv4Regex();
-
-  [GeneratedRegex("""^((([0-9A-Fa-f]{2}:){19}[0-9A-Fa-f]{2})|[0-9A-Fa-f]{40})$""")]
-  private static partial Regex FingerprintRegex();
-
+  private static IPAddress GetIPAddress(string decimalRepresentation)
+  {
+    var bytes = decimalRepresentation.Split('.').Select(byte.Parse).ToArray();
+    return new IPAddress(bytes);
+  }
 }

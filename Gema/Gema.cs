@@ -16,7 +16,6 @@ public sealed class Gema(ServerBase serverBase) : BackgroundService
 
     builder.Services.AddSingleton(sp =>
     {
-
       var logger = sp.GetRequiredService<ILogger<ServerBase>>();
       return new ServerBase(logger, args);
     });
@@ -27,11 +26,11 @@ public sealed class Gema(ServerBase serverBase) : BackgroundService
     host.Run();
   }
 
-  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+  protected override Task ExecuteAsync(CancellationToken stoppingToken)
   {
     try
     {
-      await Task.Run(_serverBase.RunServer, stoppingToken);
+      return _serverBase.RunServerAsync();
     }
     catch (Exception)
     {
