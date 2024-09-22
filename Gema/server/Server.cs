@@ -7,17 +7,21 @@ using System.Text;
 
 namespace Gema.Server;
 
-public partial class ServerBase : IDisposable
+internal partial class ServerBase : IDisposable
 {
+  internal readonly ILogger<ServerBase> Logger;
+  private readonly IRequestHandler _requestHandler;
+  private readonly IRepository _repository;
+
   private readonly TcpListener _tcpListener;
   private readonly X509Certificate2 _serverCertificate;
-  private readonly ILogger<ServerBase> _logger;
 
-  public ServerBase(ILogger<ServerBase> logger, string[] args)
+
+  public ServerBase(ILogger<ServerBase> logger, IRepository repository, IRequestHandler requestHandler, IConfiguration configuration)
   {
-    _logger = logger;
-    var configuration = LoadConfiguration(args);
-    ValidateConfiguration(configuration);
+    Logger = logger;
+    _requestHandler = requestHandler;
+    _repository = repository;
 
     var address = GetIPAddress(configuration["address"]!);
     var port = int.Parse(configuration["port"]!);
@@ -26,35 +30,13 @@ public partial class ServerBase : IDisposable
     _serverCertificate = GetCertificateFromStore(configuration["certificationFingerprint"]!);
   }
 
-  private static IConfiguration LoadConfiguration(string[] args)
-  {
-    var configurationBuilder = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-#if DEBUG
-    configurationBuilder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
-#endif
-
-    configurationBuilder.AddCommandLine(args);
-    return configurationBuilder.Build();
-  }
-
-  private void ValidateConfiguration(IConfiguration configuration)
-  {
-    var validator = new ConfigurationValidator(_logger);
-    if (!validator.Validate(configuration))
-    {
-      throw new FormatException("Configuration was set incorrectly.");
-    }
-  }
-
   private X509Certificate2 GetCertificateFromStore(string fingerPrint)
   {
     fingerPrint = fingerPrint.Replace(":", "");
 
-    _logger.LogInformation("Looking for certification with fingerPrint \"{}\"", fingerPrint);
+    Logger.LogInformation("Looking for certification with fingerPrint \"{}\"", fingerPrint);
     X509Store store = new(StoreLocation.CurrentUser);
-    _logger.LogDebug("Certification store location: {}", store.Location.ToString());
+    Logger.LogDebug("Certification store location: {}", store.Location.ToString());
     try
     {
       store.Open(OpenFlags.ReadOnly);
@@ -74,7 +56,7 @@ public partial class ServerBase : IDisposable
 
       if (signingCert.Count == 0)
       {
-        _logger.LogError("No certification for {} was found.", fingerPrint);
+        Logger.LogError("No certification for {} was found.", fingerPrint);
         throw new FileNotFoundException($"No certification for {fingerPrint} was found.", fingerPrint);
       }
 
@@ -91,7 +73,7 @@ public partial class ServerBase : IDisposable
     try
     {
       _tcpListener.Start();
-      _logger.LogInformation("Server running!");
+      Logger.LogInformation("Server running!");
 
       while (true)
       {
@@ -101,7 +83,7 @@ public partial class ServerBase : IDisposable
     }
     catch (SocketException ex)
     {
-      _logger.LogError("SocketException: {Message}", ex.Message);
+      Logger.LogError("SocketException: {Message}", ex.Message);
       throw;
     }
   }
@@ -130,7 +112,9 @@ public partial class ServerBase : IDisposable
 
 
         var uri = new Uri(uriString);
-        _logger.LogInformation("Got uri: {}", uri.ToString());
+        var response = _requestHandler.HandleRequestAsync(new Request() { Uri = uri });
+
+        Logger.LogInformation("Got uri: {}", uri.ToString());
         // Prepare a response
         string responseBody = "Check!: " + uri.ToString();
 
@@ -139,13 +123,17 @@ public partial class ServerBase : IDisposable
         await sslStream.WriteAsync(responseBytes);
         await sslStream.FlushAsync(); // Ensure the data is sent
       }
+      catch (FormatException ex)
+      {
+        //... ssl Write bad request error
+      }
       catch (IOException ex)
       {
-        _logger.LogError("IOException: {}", ex.ToString());
+        Logger.LogError("IOException: {}", ex.ToString());
       }
       catch (Exception ex)
       {
-        _logger.LogError("Exception: {}", ex.ToString());
+        Logger.LogError("Exception: {}", ex.ToString());
       }
       finally
       {

@@ -1,54 +1,56 @@
-// namespace Gema.Server;
+using Gema.Server.Models;
 
-// public class RequestRouter
-// {
-//     private readonly Dictionary<string, Func<Request, IResponse>> _handlers = new();
+namespace Gema.Server;
 
-//     public void RegisterHandler(string path, Func<Request, IResponse> handler)
-//     {
-//         _handlers[path] = handler;
-//     }
+internal class RequestHandler(Dictionary<string, Func<Request, Task<IResponse>>> handlers): IRequestHandler
+{
+  private readonly Dictionary<string, Func<Request, Task<IResponse>>> _handlers = handlers;
 
-//     public IResponse HandleRequest(Request request)
-//     {
-//         foreach (var kvp in _handlers)
-//         {
-//             var route = kvp.Key;
-//             var handler = kvp.Value;
+  // public void RegisterHandler(string path, Func<Request, IResponse> handler)
+  // {
+  //   _handlers[path] = handler;
+  // }
 
-//             if (IsMatchingRoute(request.Uri.LocalPath, route))
-//             {
-//                 return handler(request);
-//             }
-//         }
+  public async Task<IResponse> HandleRequestAsync(Request request)
+  {
+    foreach (var kvp in _handlers)
+    {
+      var route = kvp.Key;
+      var handler = kvp.Value;
 
-//         return new NotFoundResponse();
-//     }
+      if (IsMatchingRoute(request.Uri.LocalPath, route))
+      {
+        return await handler(request);
+      }
+    }
 
-//     private bool IsMatchingRoute(string requestPath, string route)
-//     {
-//         var requestSegments = requestPath.Split("?")[0].Trim('/').Split('/');
+    return new NotFoundResponse();
+  }
 
-//         var routeSegments = route.Trim('/').Split('/');
+  private static bool IsMatchingRoute(string requestPath, string route)
+  {
+    var requestSegments = requestPath.Split("?")[0].Trim('/').Split('/');
 
-//         if (requestSegments.Length != routeSegments.Length)
-//         {
-//             return false;
-//         }
+    var routeSegments = route.Trim('/').Split('/');
 
-//         for (int i = 0; i < routeSegments.Length; i++)
-//         {
-//             if (routeSegments[i] == "*")
-//             {
-//                 continue; // Wildcard, matches any segment
-//             }
+    if (requestSegments.Length != routeSegments.Length)
+    {
+      return false;
+    }
 
-//             if (routeSegments[i] != requestSegments[i])
-//             {
-//                 return false; // Not a match
-//             }
-//         }
+    for (int i = 0; i < routeSegments.Length; i++)
+    {
+      if (routeSegments[i] == "*")
+      {
+        continue;
+      }
 
-//         return true;
-//     }
-// }
+      if (routeSegments[i] != requestSegments[i])
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+}
