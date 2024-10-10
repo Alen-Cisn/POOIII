@@ -1,4 +1,4 @@
-namespace TXT.API;
+namespace Txt.Api;
 
 public class WeatherForecast
 {

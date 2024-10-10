@@ -1,5 +1,7 @@
 /.metadata/
 **/obj/**
 **/bin/**
+**/**/bin/**
+**/**/obj/**
 
 */publish/**
