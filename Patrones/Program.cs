@@ -4,14 +4,15 @@ public class Program
 {
     public static void Main()
     {
-        // Create a random tree with a specified number of nodes
-        int numberOfNodes = 10; // You can change this to create a larger or smaller tree
+        int numberOfNodes = 10;
         Tree<int> randomTree = CreateRandomTree(numberOfNodes);
 
-        Console.WriteLine("Current Node Value: " + randomTree.Value);
-        while (randomTree.NextValue())
+
+        var iterator = randomTree.GetIterator();
+        Console.WriteLine("Valor actual: " + iterator.Value);
+        while (iterator.NextValue())
         {
-            Console.WriteLine("Next Node Value: " + randomTree.Value);
+            Console.WriteLine("Siguiente valor: " + iterator.Value);
         }
     }
 
@@ -24,7 +25,7 @@ public class Program
         queue.Enqueue(root);
 
         Random random = new();
-        int currentNodeValue = 2; 
+        int currentNodeValue = 2;
 
         while (currentNodeValue <= numberOfNodes)
         {

@@ -2,10 +2,26 @@ using System.Diagnostics;
 
 namespace Patrones;
 
-public class Tree<T>(TreeNode<T> root): IIterable<T>
+public class Tree<T>(TreeNode<T> root) : IIterable<T>
 {
     public TreeNode<T> Root = root;
-    private TreeNode<T> _currentNode = root;
+
+    public IIterator<T> GetIterator()
+    {
+        return new TreeIterator<T>(Root);
+    }
+}
+
+
+public class TreeIterator<T> : IIterator<T>
+{
+    private TreeNode<T> _currentNode;
+
+    public TreeIterator(TreeNode<T> root)
+    {
+        _currentNode = root;
+    }
+
     public T Value => _currentNode.Value;
 
     public bool NextValue()
@@ -22,10 +38,10 @@ public class Tree<T>(TreeNode<T> root): IIterable<T>
         }
     }
 
-    private static TreeNode<T>? GetNextRelative(TreeNode<T>? lastNode, TreeNode<T> currentNode) 
+    private static TreeNode<T>? GetNextRelative(TreeNode<T>? lastNode, TreeNode<T> currentNode)
     {
         var lastNodeSiblings = currentNode.Children;
-        var indexOfCurrentNodeAsSibling = lastNode == null ? -1 :  lastNodeSiblings.IndexOf(lastNode);
+        var indexOfCurrentNodeAsSibling = lastNode == null ? -1 : lastNodeSiblings.IndexOf(lastNode);
 
         if (indexOfCurrentNodeAsSibling < lastNodeSiblings.Count - 1)
         {
@@ -39,8 +55,5 @@ public class Tree<T>(TreeNode<T> root): IIterable<T>
 
         return null;
     }
-
-    public void Reset() {
-        _currentNode = Root;
-    }
 }
+
