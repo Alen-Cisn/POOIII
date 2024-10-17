@@ -8,8 +8,8 @@ public interface IRepositoryBase<T> where T : Auditable
 {
     IQueryable<T> FindAll();
     IQueryable<T> FindWhere(Expression<Func<T, bool>> expression);
-    Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default);
-    T Create(T entity);
+    Task<EntityEntry<T>> CreateAsync(T entity, CancellationToken cancellationToken = default);
+    EntityEntry<T> Create(T entity);
     void Update(T entity);
     void Delete(T entity);
 }

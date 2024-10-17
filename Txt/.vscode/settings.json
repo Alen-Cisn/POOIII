@@ -3,4 +3,7 @@
     "editor.insertSpaces": true,
     "editor.detectIndentation": false,
     "editor.formatOnSave": true,
+    "editor.autoIndent": "full",
+    "editor.guides.indentation": true,
+    "editor.guides.highlightActiveIndentation": "always"
 }

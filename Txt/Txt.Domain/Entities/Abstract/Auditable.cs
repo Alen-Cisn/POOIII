@@ -7,16 +7,15 @@ public abstract class Auditable : IAuditable
 {
     [Required]
     [ForeignKey("CreatedBy")]
-    public string CreatedById { get; set; }
+    public string CreatedById { get; set; } = null!;
     [Required]
-    public User CreatedBy { get; set; }
+    public User CreatedBy { get; set; } = null!;
     [Required]
     public DateTime CreatedOn { get; set; }
 
     [ForeignKey("ModifiedBy")]
     public string? ModifiedById { get; set; }
     public User? ModifiedBy { get; set; }
-    [Required]
     public DateTime? ModifiedOn { get; set; }
 
 }

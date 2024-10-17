@@ -8,4 +8,7 @@ namespace Txt.Infrastructure.Repositories;
 public class NotesRepository(ApplicationDbContext context, ICurrentUserService currentUserService)
     : RepositoryBase<Note>(context, currentUserService), INotesRepository
 {
+    public Task<int> SaveAsync(CancellationToken cancellationToken = default)
+        => Context.SaveChangesAsync(cancellationToken);
+
 }

@@ -200,7 +200,6 @@ namespace Txt.Infrastructure.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("ModifiedOn")
-                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

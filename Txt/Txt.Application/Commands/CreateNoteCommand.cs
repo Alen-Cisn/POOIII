@@ -6,16 +6,19 @@ using Txt.Shared.Commands;
 namespace Txt.Application.Commands;
 
 public class CreateNoteCommandHandler(INotesRepository notesRepository)
-    : IRequestHandler<CreateNoteCommand, int>
+    : IRequestHandler<CreateNoteCommand, Note>
 {
-    public async Task<int> Handle(CreateNoteCommand request, CancellationToken cancellationToken)
+    public async Task<Note> Handle(CreateNoteCommand request, CancellationToken cancellationToken)
     {
         var note = new Note
         {
             Description = request.Description,
         };
 
-        var createdNote = await notesRepository.CreateAsync(note, cancellationToken);
-        return createdNote.Id;
+        var entry = notesRepository.Create(note);
+
+        await notesRepository.SaveAsync(cancellationToken);
+
+        return entry.Entity;
     }
 }

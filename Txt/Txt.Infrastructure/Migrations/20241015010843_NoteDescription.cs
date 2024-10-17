@@ -1,11 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Txt.Infrastructure.Data;
 
 #nullable disable
 
 namespace Txt.Infrastructure.Migrations
 {
-    /// <inheritdoc />
-    public partial class NoteDescription : Migration
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20241015010843_NoteDescription")]
+    public class NoteDescription : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -15,14 +15,9 @@ public class NotesController(ILogger<NotesController> logger, IMediator mediator
 
     [HttpGet]
     public Task<List<Note>> Get(CancellationToken cancellationToken)
-    {
-        return mediator.Send(new NoteQuery(), cancellationToken);
-    }
+        => mediator.Send(new NoteQuery(), cancellationToken);
 
     [HttpPost]
-    public Task<int> Post([FromBody] CreateNoteCommand command)
-    {
-        Console.WriteLine("Acá se llega");
-        return mediator.Send(command);
-    }
+    public Task<Note> Post([FromBody] CreateNoteCommand command)
+        => mediator.Send(command);
 }
