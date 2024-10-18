@@ -1,11 +1,17 @@
 @page "/login"
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.WebUtilities
+@using Txt.Ui.Models
+@attribute [AllowAnonymous]
 @inject IHttpClientFactory HttpFactory
+@inject ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
 
 <PageTitle>Login</PageTitle>
 
 <h1>Login</h1>
 
-<p role="status">Pleas, enter credentials</p>
+<p role="status">Please, enter credentials</p>
 <form @onsubmit="LoginSubmit">
     <div class="form-group">
         <label for="email">Email address</label>
@@ -33,6 +39,29 @@
             password = password,
         });
 
-        Console.WriteLine(response.Content);
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<AccessTokenResponse>();
+            if (result == null)
+            {
+                return;
+            }
+            await localStorage.SetItemAsync("accessToken", result.AccessToken);
+            await localStorage.SetItemAsync("refreshToken", result.RefreshToken);
+            await localStorage.SetItemAsync("expiresOn",
+            DateTime.Now.Add(TimeSpan.FromSeconds(result.ExpiresIn)));
+        }
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if (queryStrings.TryGetValue("returnUrl", out var returnUrl) && returnUrl.FirstOrDefault() != null)
+        {
+            var returnUri = new Uri(returnUrl.FirstOrDefault()!);
+            NavigationManager.NavigateTo(returnUri.AbsolutePath);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
     }
 }

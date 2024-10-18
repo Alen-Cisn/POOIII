@@ -1,4 +1,4 @@
-using Microsoft.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.OpenApi.Models;
 using Txt.Api.Helpers;
 using Txt.Application.Helpers;
@@ -45,7 +45,9 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<ApplicationDbContext>();
 
 builder.Services
-    .AddIdentityApiEndpoints<User>()
+    .AddIdentityApiEndpoints<User>(options =>
+    {
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddLocalServices();
