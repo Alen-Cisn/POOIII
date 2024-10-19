@@ -1,12 +1,11 @@
 
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using Blazored.LocalStorage;
-using Txt.Ui.Models;
+using Txt.Ui.Services.Interfaces;
 
 namespace Txt.Ui.Helpers;
 
-internal class AuthorizationHandler(ILocalStorageService localStorage, HttpClient client, IServiceProvider serviceProvider) : DelegatingHandler
+internal class AuthorizationHandler(ILocalStorageService localStorage, IAuthService authService) : DelegatingHandler
 {
     const int minutesSpan = 2;
 
@@ -17,28 +16,12 @@ internal class AuthorizationHandler(ILocalStorageService localStorage, HttpClien
         if (await IsAccessTokenExpiringSoon(cancellationToken))
         {
             var refreshToken = await localStorage.GetItemAsync<string>("refreshToken", cancellationToken);
-
-            var response = await client.PostAsJsonAsync("/refresh-token", new
+            if (string.IsNullOrEmpty(refreshToken))
             {
-                RefreshToken = refreshToken
-            }, cancellationToken);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken);
-                if (result != null)
-                {
-                    await localStorage.SetItemAsync("accessToken", result.AccessToken, cancellationToken);
-                    await localStorage.SetItemAsync("refreshToken", result.RefreshToken, cancellationToken);
-                    await localStorage.SetItemAsync("expiresOn",
-                    DateTime.Now.Add(TimeSpan.FromSeconds(result.ExpiresIn)), cancellationToken);
-
-                    var authStateProvider = (AuthenticationStateProvider?)serviceProvider.GetService(typeof(Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider));
-                    authStateProvider?.NotifyUserAuthentication(result.AccessToken);
-
-                    accessToken = result.AccessToken;
-                }
+                return new HttpResponseMessage();
             }
+
+            accessToken = await authService.RefreshSession(refreshToken, cancellationToken);
         }
 
         accessToken ??= await localStorage.GetItemAsync<string>("accessToken", cancellationToken);

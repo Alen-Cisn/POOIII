@@ -1,67 +1,44 @@
 @page "/login"
+@layout EmptyLayout
+
+@attribute [AllowAnonymous]
+
 @using Blazored.LocalStorage
 @using Microsoft.AspNetCore.WebUtilities
 @using Txt.Ui.Models
-@attribute [AllowAnonymous]
+@using Txt.Ui.Services.Interfaces
+
 @inject IHttpClientFactory HttpFactory
 @inject ILocalStorageService localStorage
 @inject NavigationManager NavigationManager
+@inject IAuthService authService
 
 <PageTitle>Login</PageTitle>
 
 <h1>Login</h1>
 
-<p role="status">Please, enter credentials</p>
-<form @onsubmit="LoginSubmit">
-    <div class="form-group">
-        <label for="email">Email address</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter email" required @bind="email"
-            @bind:event="oninput">
-    </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" id="password" placeholder="Password" required @bind="password"
-            @bind:event="oninput">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-
+<div class="login-container">
+    <p class="status-message" role="status">Please, enter credentials</p>
+    <EditForm Model="@loginRequest" OnValidSubmit="@LoginSubmit">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <HxInputText @bind-Value="loginRequest.Email" Label="Email address" InputMode="InputMode.Email" />
+        </div>
+        <div class="form-group">
+            <HxInputText @bind-Value="loginRequest.Password" Label="Password" Type="InputType.Password" />
+        </div>
+        <HxSubmit Text="Submit" Color="ThemeColor.Primary" class="submit-button" />
+    </EditForm>
+</div>
 @code {
-    private string email = "";
-    private string password = "";
+    private LoginRequest loginRequest = new()
+        {
+            Email = "",
+            Password = "",
+        };
 
     private async Task LoginSubmit()
     {
-        var Http = HttpFactory.CreateClient("Public.Txt.Api");
-        var response = await Http.PostAsJsonAsync("/authorization/login", new
-        {
-            email = email,
-            password = password,
-        });
-
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<AccessTokenResponse>();
-            if (result == null)
-            {
-                return;
-            }
-            await localStorage.SetItemAsync("accessToken", result.AccessToken);
-            await localStorage.SetItemAsync("refreshToken", result.RefreshToken);
-            await localStorage.SetItemAsync("expiresOn",
-            DateTime.Now.Add(TimeSpan.FromSeconds(result.ExpiresIn)));
-        }
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
-        if (queryStrings.TryGetValue("returnUrl", out var returnUrl) && returnUrl.FirstOrDefault() != null)
-        {
-            var returnUri = new Uri(returnUrl.FirstOrDefault()!);
-            NavigationManager.NavigateTo(returnUri.AbsolutePath);
-        }
-        else
-        {
-            NavigationManager.NavigateTo("/");
-        }
+        await authService.LoginAsync(loginRequest.Email, loginRequest.Password);
     }
 }

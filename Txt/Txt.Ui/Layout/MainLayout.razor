@@ -1,13 +1,14 @@
 ﻿@inherits LayoutComponentBase
+@attribute [Authorize]
+
 <div class="page">
-    <div class="sidebar">
+    <nav>
         <NavMenu />
-    </div>
+    </nav>
 
     <main>
         <div class="top-row px-4 auth">
             <LoginDisplay />
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
 
         <article class="content px-4">

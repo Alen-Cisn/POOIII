@@ -47,6 +47,11 @@ builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services
     .AddIdentityApiEndpoints<User>(options =>
     {
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 8;
+        options.Password.RequiredUniqueChars = 4;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = true;
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 

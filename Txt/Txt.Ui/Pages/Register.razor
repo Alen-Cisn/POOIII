@@ -1,0 +1,56 @@
+@page "/register"
+@layout EmptyLayout
+
+@attribute [AllowAnonymous]
+
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.WebUtilities
+@using Txt.Ui.Models
+@using Txt.Ui.Services.Interfaces
+
+@inject IHttpClientFactory HttpFactory
+@inject ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+@inject IAuthService authService
+
+<PageTitle>Register</PageTitle>
+
+<h1>Register</h1>
+
+<div class="login-container">
+    <p class="status-message" role="status">Please, enter credentials</p>
+    <EditForm Model="@registerRequest" OnValidSubmit="@RegisterSubmit">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <HxInputText @bind-Value="registerRequest.Email" Label="Email address" InputMode="InputMode.Email" />
+        </div>
+        <HxTooltip Placement="TooltipPlacement.Right"
+            Text="It should be at least 8 characters length, have an uppercase letter, a lowercase letter, and a digit.">
+            <div class="form-group">
+                <HxInputText @bind-Value="registerRequest.Password" Label="Password" Type="InputType.Password" />
+            </div>
+        </HxTooltip>
+        <div class="form-group">
+            <HxInputText @bind-Value="registerRequest.PasswordConfirmation" Label="Confirm password"
+                Type="InputType.Password" />
+        </div>
+        <div class="d-flex flex-row justify-content-end text-right">
+            <HxSubmit Text="Submit" Color="ThemeColor.Primary" CssClass="" />
+            <a href="/login" class="col text-right">Log in</a>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private RegisterRequest registerRequest = new()
+        {
+            Email = "",
+            Password = "",
+            PasswordConfirmation = "",
+        };
+
+    private async Task RegisterSubmit()
+    {
+        await authService.RegisterAsync(registerRequest.Email, registerRequest.Password);
+    }
+}

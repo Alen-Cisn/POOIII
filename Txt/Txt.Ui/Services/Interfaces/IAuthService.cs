@@ -1,9 +1,9 @@
 
-using Txt.Shared.Dtos;
-
 namespace Txt.Ui.Services.Interfaces;
 
 public interface IAuthService
 {
-    public Task<AccountInformation?> Login();
+    public Task LoginAsync(string email, string password, CancellationToken cancellationToken = default);
+    public Task RegisterAsync(string email, string password, CancellationToken cancellationToken = default);
+    public Task<string?> RefreshSession(string refreshToken, CancellationToken cancellationToken = default);
 }

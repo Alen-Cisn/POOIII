@@ -1,5 +1,6 @@
 using System.Data;
 using Blazored.LocalStorage;
+using Havit.Blazor.Components.Web;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
@@ -16,7 +17,6 @@ public class Program
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
-        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
         builder.Services.AddTransient<AuthorizationHandler>();
         var clientBaseAddress = new Uri(builder.Configuration["apiurl"]
             ?? throw new NoNullAllowedException("apirul is null (reading from config file)"));
@@ -32,12 +32,13 @@ public class Program
         builder.Services.AddBlazoredLocalStorage();
 
         builder.Services.AddScoped<Helpers.AuthenticationStateProvider>();
-        builder.Services.AddScoped<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider>(s => s.GetRequiredService<Helpers.AuthenticationStateProvider>());
+        builder.Services.AddScoped<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, Helpers.AuthenticationStateProvider>();
 
         builder.Services.AddHttpClient<Helpers.AuthenticationStateProvider>(client => client.BaseAddress = clientBaseAddress);
-        builder.Services.AddHttpClient<AuthorizationHandler>((sp, _) => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Public.Txt.Api"));
 
         builder.Services.AddLocalServices();
+
+        builder.Services.AddHxServices();
 
         await builder.Build().RunAsync();
     }
