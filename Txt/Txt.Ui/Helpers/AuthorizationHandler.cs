@@ -12,13 +12,16 @@ internal class AuthorizationHandler(ILocalStorageService localStorage, IAuthServ
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         string? accessToken = null;
-
+        Console.WriteLine("Here! I'm doing a request.");
         if (await IsAccessTokenExpiringSoon(cancellationToken))
         {
             var refreshToken = await localStorage.GetItemAsync<string>("refreshToken", cancellationToken);
             if (string.IsNullOrEmpty(refreshToken))
             {
-                return new HttpResponseMessage();
+                return new HttpResponseMessage()
+                {
+                    StatusCode = System.Net.HttpStatusCode.Forbidden,
+                };
             }
 
             accessToken = await authService.RefreshSession(refreshToken, cancellationToken);

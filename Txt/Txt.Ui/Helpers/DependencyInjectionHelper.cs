@@ -9,6 +9,7 @@ public static class DependencyInjectionHelper
     public static IServiceCollection AddLocalServices(this IServiceCollection services)
     {
         services.AddScoped<IPublicClientService, PublicClientService>();
+        services.AddScoped<ITxtApiClientService, TxtApiClientService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAuthService, AuthService>();
 

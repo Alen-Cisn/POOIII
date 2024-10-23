@@ -1,0 +1,23 @@
+@inject ISnackbar Snackbar
+@inject ILogger<ErrorHandler> Logger
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code
+{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    public async Task HandleExceptionAsync(Exception ex)
+    {
+        Logger.LogError(ex, ex.Message);
+        ShowAlert(ex.Message);
+    }
+
+    private void ShowAlert(string errorMessage)
+    {
+        Snackbar.Add(errorMessage, Severity.Error);
+    }
+}

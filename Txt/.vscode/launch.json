@@ -2,13 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Blazor WebAssembly Debug",
-            "type": "blazorwasm",
-            "request": "launch",
-            "url": "http://localhost:5253",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
             "name": "ASP.NET Core Launch (web)",
             "type": "coreclr",
             "request": "launch",

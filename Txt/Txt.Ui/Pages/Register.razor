@@ -3,14 +3,9 @@
 
 @attribute [AllowAnonymous]
 
-@using Blazored.LocalStorage
-@using Microsoft.AspNetCore.WebUtilities
 @using Txt.Ui.Models
 @using Txt.Ui.Services.Interfaces
 
-@inject IHttpClientFactory HttpFactory
-@inject ILocalStorageService localStorage
-@inject NavigationManager NavigationManager
 @inject IAuthService authService
 
 <PageTitle>Register</PageTitle>
@@ -22,20 +17,25 @@
     <EditForm Model="@registerRequest" OnValidSubmit="@RegisterSubmit">
         <DataAnnotationsValidator />
         <div class="form-group">
-            <HxInputText @bind-Value="registerRequest.Email" Label="Email address" InputMode="InputMode.Email" />
+            <MudTextField @bind-Value="registerRequest.Email" Label="Email address" InputType="InputType.Email"
+                aria-label="User email." For="@(() => registerRequest.Email)" />
         </div>
-        <HxTooltip Placement="TooltipPlacement.Right"
+        <MudTooltip Placement="Placement.Right"
             Text="It should be at least 8 characters length, have an uppercase letter, a lowercase letter, and a digit.">
             <div class="form-group">
-                <HxInputText @bind-Value="registerRequest.Password" Label="Password" Type="InputType.Password" />
+                <MudTextField @bind-Value="registerRequest.Password" Label="Password" InputType="InputType.Password"
+                    aria-label="User password." For="@(() => registerRequest.Password)" />
             </div>
-        </HxTooltip>
+        </MudTooltip>
         <div class="form-group">
-            <HxInputText @bind-Value="registerRequest.PasswordConfirmation" Label="Confirm password"
-                Type="InputType.Password" />
+            <MudTextField @bind-Value="registerRequest.PasswordConfirmation" Label="Confirm password"
+                InputType="InputType.Password" aria-label="User password confirmation."
+                For="@(() => registerRequest.PasswordConfirmation)" />
         </div>
         <div class="d-flex flex-row justify-content-end text-right">
-            <HxSubmit Text="Submit" Color="ThemeColor.Primary" CssClass="" />
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                Log in
+            </MudButton>
             <a href="/login" class="col text-right">Log in</a>
         </div>
     </EditForm>
@@ -49,8 +49,6 @@
             PasswordConfirmation = "",
         };
 
-    private async Task RegisterSubmit()
-    {
-        await authService.RegisterAsync(registerRequest.Email, registerRequest.Password);
-    }
+    private Task RegisterSubmit()
+    => authService.RegisterAsync(registerRequest.Email, registerRequest.Password);
 }

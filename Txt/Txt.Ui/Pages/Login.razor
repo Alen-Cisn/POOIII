@@ -4,11 +4,9 @@
 @attribute [AllowAnonymous]
 
 @using Blazored.LocalStorage
-@using Microsoft.AspNetCore.WebUtilities
 @using Txt.Ui.Models
 @using Txt.Ui.Services.Interfaces
 
-@inject IHttpClientFactory HttpFactory
 @inject ILocalStorageService localStorage
 @inject NavigationManager NavigationManager
 @inject IAuthService authService
@@ -22,14 +20,20 @@
     <EditForm Model="@loginRequest" OnValidSubmit="@LoginSubmit">
         <DataAnnotationsValidator />
         <div class="form-group">
-            <HxInputText @bind-Value="loginRequest.Email" Label="Email address" InputMode="InputMode.Email" />
+
+            <MudTextField @bind-Value="loginRequest.Email" Label="Email address" InputType="InputType.Email"
+                aria-label="User email." For="@(() => loginRequest.Email)" />
         </div>
         <div class="form-group">
-            <HxInputText @bind-Value="loginRequest.Password" Label="Password" Type="InputType.Password" />
+            <MudTextField @bind-Value="loginRequest.Password" Label="Password" InputType="InputType.Password"
+                aria-label="User Password." For="@(() => loginRequest.Password)" />
         </div>
-        <HxSubmit Text="Submit" Color="ThemeColor.Primary" class="submit-button" />
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+            Log in
+        </MudButton>
     </EditForm>
 </div>
+
 @code {
     private LoginRequest loginRequest = new()
         {
@@ -37,8 +41,6 @@
             Password = "",
         };
 
-    private async Task LoginSubmit()
-    {
-        await authService.LoginAsync(loginRequest.Email, loginRequest.Password);
-    }
+    private Task LoginSubmit()
+    => authService.LoginAsync(loginRequest.Email, loginRequest.Password);
 }

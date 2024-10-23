@@ -1,21 +1,58 @@
 using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text.Json;
 using Txt.Shared.Dtos;
 using Txt.Ui.Services.HttpClients.Interfaces;
 using Txt.Ui.Services.Interfaces;
 
 namespace Txt.Ui.Services;
 
-public class AccountService(ITxtApiClientService clientService) : IAccountService
+public class AccountService(ITxtApiClientService clientService, ILogger<AccountService> logger) : IAccountService
 {
     private HttpClient HttpClient { get; init; } = clientService.HttpClient;
 
-    public Task<AccountInformation?> Get()
+    private const string Endpoint = "/account";
+
+    public async Task<AccountInformation?> Get()
     {
-        return HttpClient.GetFromJsonAsync<AccountInformation>($"account");
+        try
+        {
+            return await HttpClient.GetFromJsonAsync<AccountInformation>(Endpoint);
+
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, "HTTP request error while fetching account information: {Message}", httpEx.Message);
+        }
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while fetching account information: {Message}", jsonEx.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while fetching account information: {Message}", ex.Message);
+        }
+        return null;
     }
 
-    public Task<IEnumerable<ClaimDto>?> GetClaims()
+    public async Task<IEnumerable<ClaimDto>?> GetClaims()
     {
-        return HttpClient.GetFromJsonAsync<IEnumerable<ClaimDto>>($"claims");
+        try
+        {
+            return await HttpClient.GetFromJsonAsync<IEnumerable<ClaimDto>>(Endpoint + "/claims");
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, "HTTP request error while fetching claims: {Message}", httpEx.Message);
+        }
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while fetching claims: {Message}", jsonEx.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while fetching claims: {Message}", ex.Message);
+        }
+        return null;
     }
 }

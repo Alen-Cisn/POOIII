@@ -1,20 +1,19 @@
-﻿<HxSidebar @bind-Collapsed="Collapsed">
-    <HeaderTemplate>
+﻿<MudDrawer @bind-Open="Open">
+    @* <HeaderTemplate>
         <HxSidebarBrand BrandName="Brand name" BrandNameShort="BN" />
-    </HeaderTemplate>
+    </HeaderTemplate> *@
+    <MudNavMenu>
+        <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+        <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
+        <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix">Weather</MudNavLink>
+    </MudNavMenu>
 
-    <ItemsTemplate>
-        <HxSidebarItem Text="Home" Icon="BootstrapIcon.HouseDoorFill" TooltipText="Home" Href="/" />
-        <HxSidebarItem Text="Counter" Icon="BootstrapIcon.PlusSquareFill" TooltipText="Counter" Href="/counter" />
-        <HxSidebarItem Text="Weather" Icon="BootstrapIcon.ListNested" TooltipText="Wheather" Href="/weather" />
-    </ItemsTemplate>
-
-    <FooterTemplate>
+    @* <FooterTemplate>
         <HxSidebarFooter Href="/login" Icon="BootstrapIcon.Person"
             Text="@(context.SidebarCollapsed ? null : "Login")" />
-    </FooterTemplate>
-</HxSidebar>
+    </FooterTemplate> *@
+</MudDrawer>
 
 @code {
-    public bool Collapsed { get; set; }
+    private bool Open { get; set; }
 }

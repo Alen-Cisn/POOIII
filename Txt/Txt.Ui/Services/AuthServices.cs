@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.WebUtilities;
 using Txt.Ui.Helpers;
 using Txt.Ui.Models;
 using Txt.Ui.Services.HttpClients.Interfaces;
@@ -33,13 +32,16 @@ public class AuthService(
             {
                 return;
             }
+
             _ = SaveAndNotifySession(result, cancellationToken);
 
             var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
-            var queryStrings = QueryHelpers.ParseQuery(uri.Query);
-            if (queryStrings.TryGetValue("returnUrl", out var returnUrl) && returnUrl.FirstOrDefault() != null)
+            var queryStrings = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var returnUrl = queryStrings.Get("returnUrl");
+
+            if (!string.IsNullOrEmpty(returnUrl))
             {
-                var returnUri = new Uri(returnUrl.FirstOrDefault()!);
+                var returnUri = new Uri(returnUrl);
                 navigationManager.NavigateTo(returnUri.AbsolutePath);
             }
             else
@@ -65,7 +67,7 @@ public class AuthService(
 
     public async Task<string?> RefreshSession(string refreshToken, CancellationToken cancellationToken = default)
     {
-        var response = await HttpClient.PostAsJsonAsync("/refresh-token", new
+        var response = await HttpClient.PostAsJsonAsync("/authorization/refresh-token", new
         {
             RefreshToken = refreshToken
         }, cancellationToken);
@@ -84,6 +86,9 @@ public class AuthService(
         return null;
     }
 
+    public Task LogoutAsync(CancellationToken cancellationToken = default)
+        => localStorage.RemoveItemsAsync(["accessToken", "refreshToken", "expiresOn"], cancellationToken).AsTask();
+
     public async Task SaveAndNotifySession(AccessTokenResponse accessTokenResponse, CancellationToken cancellationToken = default)
     {
         await localStorage.SetItemAsync("accessToken", accessTokenResponse.AccessToken, cancellationToken);
@@ -92,6 +97,6 @@ public class AuthService(
         DateTime.Now.Add(TimeSpan.FromSeconds(accessTokenResponse.ExpiresIn)), cancellationToken);
 
         var authStateProvider = (AuthenticationStateProvider?)serviceProvider.GetService(typeof(Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider));
-        authStateProvider?.NotifyUserAuthentication(accessTokenResponse.AccessToken);
+        authStateProvider?.NotifyUserAuthentication();
     }
 }

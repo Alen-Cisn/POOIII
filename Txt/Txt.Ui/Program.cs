@@ -1,12 +1,10 @@
 using System.Data;
 using Blazored.LocalStorage;
-using Havit.Blazor.Components.Web;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.EntityFrameworkCore.Query;
+using MudBlazor.Services;
 using Txt.Ui.Helpers;
+
 namespace Txt.Ui;
 
 public class Program
@@ -17,29 +15,36 @@ public class Program
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
-        builder.Services.AddTransient<AuthorizationHandler>();
         var clientBaseAddress = new Uri(builder.Configuration["apiurl"]
             ?? throw new NoNullAllowedException("apirul is null (reading from config file)"));
 
         builder.Services.AddHttpClient("Public.Txt.Api", client => client.BaseAddress = clientBaseAddress);
 
         builder.Services.AddAuthorizationCore();
-        builder.Services.AddScoped<AuthorizationHandler>();
+        builder.Services.AddTransient<AuthorizationHandler>();
         builder.Services
-            .AddHttpClient("Txt.Api", client => client.BaseAddress = clientBaseAddress)
-            .AddHttpMessageHandler<AuthorizationHandler>();
+            .AddHttpClient("Txt.Api", client =>
+            {
+                client.BaseAddress = clientBaseAddress;
+
+            })
+            .ConfigureAdditionalHttpMessageHandlers((dh, sp) =>
+            {
+                dh.Add(sp.GetRequiredService<AuthorizationHandler>());
+            });
 
         builder.Services.AddBlazoredLocalStorage();
 
-        builder.Services.AddScoped<Helpers.AuthenticationStateProvider>();
-        builder.Services.AddScoped<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, Helpers.AuthenticationStateProvider>();
+        builder.Services.AddScoped<AuthenticationStateProvider>();
+        builder.Services.AddScoped<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, AuthenticationStateProvider>();
 
-        builder.Services.AddHttpClient<Helpers.AuthenticationStateProvider>(client => client.BaseAddress = clientBaseAddress);
+        builder.Services.AddHttpClient<AuthenticationStateProvider>(client => client.BaseAddress = clientBaseAddress);
+        builder.Services.AddMudServices();
 
         builder.Services.AddLocalServices();
+        var app = builder.Build();
 
-        builder.Services.AddHxServices();
 
-        await builder.Build().RunAsync();
+        await app.RunAsync();
     }
 }

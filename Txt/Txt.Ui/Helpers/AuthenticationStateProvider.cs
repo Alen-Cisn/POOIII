@@ -5,8 +5,7 @@ using Txt.Ui.Services.Interfaces;
 
 namespace Txt.Ui.Helpers;
 
-internal class AuthenticationStateProvider(
-    IAccountService accountService)
+internal class AuthenticationStateProvider(IAccountService accountService)
     : Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider
 {
 
@@ -19,22 +18,14 @@ internal class AuthenticationStateProvider(
             ? new ClaimsIdentity()
             : new ClaimsIdentity(ToClaimEnumerable(claimDtos), "claims");
 
-        var user = new ClaimsPrincipal(identity);
-        return new AuthenticationState(user);
+        var authenticatedUser = new ClaimsPrincipal(identity);
+        return new AuthenticationState(authenticatedUser);
     }
 
-    public async Task NotifyUserAuthentication()
+    public Task NotifyUserAuthentication()
     {
-        var claimDtos = await accountService.GetClaims();
-        var identity = claimDtos == null
-            ? new ClaimsIdentity()
-            : new ClaimsIdentity(ToClaimEnumerable(claimDtos), "claims");
-
-        var authenticatedUser = new ClaimsPrincipal(identity);
-
-        var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
-
-        NotifyAuthenticationStateChanged(authState);
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        return Task.CompletedTask;
     }
 
     public void NotifyUserLogout()
