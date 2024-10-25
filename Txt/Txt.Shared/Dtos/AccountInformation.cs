@@ -4,6 +4,6 @@ namespace Txt.Shared.Dtos;
 
 public sealed class AccountInformation
 {
-    public string UserId { get; set; }
-    public string Email { get; set; }
+    public required string UserId { get; set; }
+    public required string Email { get; set; }
 }

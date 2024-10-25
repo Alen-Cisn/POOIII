@@ -1,6 +1,7 @@
 
 using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
+using Txt.Shared.ErrorModels;
 
 namespace Txt.Api.Helpers;
 public static class ErrorHandlerHelper
@@ -28,18 +29,18 @@ public static class ErrorHandlerHelper
         var exceptionFeature = httpContext.Features.Get<IExceptionHandlerFeature>();
         if (exceptionFeature != null)
         {
-            var exception = exceptionFeature.Error;
+            Exception exception = exceptionFeature.Error;
 
             httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
             httpContext.Response.ContentType = "application/json";
 
-            var response = new
+            Error response = new()
             {
-                httpContext.Response.StatusCode,
-                Details = includeDetails ? exception.ToString() : null
+                ErrorCode = httpContext.Response.StatusCode,
+                Details = includeDetails ? exception.ToString() : "An unexpected error ocurred."
             };
 
-            var jsonResponse = JsonSerializer.Serialize(response);
+            string jsonResponse = JsonSerializer.Serialize(response);
 
             await httpContext.Response.WriteAsync(jsonResponse);
         }

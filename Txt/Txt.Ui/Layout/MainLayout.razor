@@ -1,18 +1,12 @@
 ﻿@inherits LayoutComponentBase
 @attribute [Authorize]
-
-<div class="page">
-    <nav>
-        <NavMenu />
-    </nav>
-
-    <main>
-        <div class="top-row px-4 auth">
-            <LoginDisplay />
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudLayout>
+    <NavMenu />
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>

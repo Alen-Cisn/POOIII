@@ -14,8 +14,8 @@ public class AccountController(ICurrentUserService currentUserService) : Control
     public AccountInformation Get()
         => new()
         {
-            UserId = currentUserService.UserId,
-            Email = currentUserService.Email,
+            UserId = currentUserService.UserId!,
+            Email = currentUserService.Email!,
         };
 
     [HttpGet("claims")]

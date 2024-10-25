@@ -1,8 +1,6 @@
-using Txt.Domain.Entities;
-
 namespace Txt.Domain.Repositories.Interfaces;
 
-public interface INotesRepository : IRepositoryBase<Note>
+public interface ISavableRepository
 {
     /// <summary>
     ///     Guarda en base de datos los cambios hechos
@@ -18,5 +16,6 @@ public interface INotesRepository : IRepositoryBase<Note>
     ///     Un error al guardar, al tener un número de entidados diferente al que debería. Generalmente un problema de concurrencia
     /// </exception>
     /// <exception cref="OperationCanceledException">Si <see cref="CancellationToken" /> marca la operación como cancelada.</exception>
+
     Task<int> SaveAsync(CancellationToken cancellationToken = default);
 }

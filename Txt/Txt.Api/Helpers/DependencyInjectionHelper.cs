@@ -15,7 +15,7 @@ public static class DependencyInjectionHelper
     }
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<INotesRepository, NotesRepository>();
+        services.AddScoped<INotesModuleRepository, NotesModuleRepository>();
         return services;
     }
 }

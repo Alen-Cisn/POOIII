@@ -13,10 +13,10 @@ public abstract class RepositoryBase<T>(ApplicationDbContext repositoryContext, 
 {
     protected ApplicationDbContext Context { get; set; } = repositoryContext;
 
-    public IQueryable<T> FindAll() => Context.Set<T>().AsNoTracking();
+    public IQueryable<T> FindAll() => Context.Set<T>().Where(a => a.CreatedById == currentUserService.UserId).AsNoTracking();
 
     public IQueryable<T> FindWhere(Expression<Func<T, bool>> expression) =>
-        Context.Set<T>().Where(expression).AsNoTracking();
+        Context.Set<T>().Where(a => a.CreatedById == currentUserService.UserId).Where(expression).AsNoTracking();
 
     public EntityEntry<T> Create(T entity)
     {
@@ -43,5 +43,6 @@ public abstract class RepositoryBase<T>(ApplicationDbContext repositoryContext, 
         return entry;
     }
 
+    public void DeleteRange(IEnumerable<T> entities) => Context.Set<T>().RemoveRange(entities);
 
 }
