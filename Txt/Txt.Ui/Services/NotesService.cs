@@ -6,7 +6,7 @@ using Txt.Ui.Services.Interfaces;
 
 namespace Txt.Ui.Services;
 
-public class AccountService(ITxtApiClientService clientService, ILogger<AccountService> logger) : IAccountService
+public class NotesService(ITxtApiClientService clientService, ILogger<NotesService> logger) : INotesService
 {
     private HttpClient HttpClient { get; init; } = clientService.HttpClient;
 

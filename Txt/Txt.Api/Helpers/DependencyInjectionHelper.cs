@@ -1,4 +1,5 @@
 
+using Txt.Application.Helpers;
 using Txt.Application.Services;
 using Txt.Application.Services.Interfaces;
 using Txt.Domain.Repositories.Interfaces;
@@ -11,6 +12,7 @@ public static class DependencyInjectionHelper
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddAutoMapper(typeof(AutoMapperProfile));
         return services;
     }
     public static IServiceCollection AddRepositories(this IServiceCollection services)

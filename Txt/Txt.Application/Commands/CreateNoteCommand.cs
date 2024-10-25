@@ -1,17 +1,19 @@
-using MediatR;
+using AutoMapper;
 using Txt.Application.Commands.Interfaces;
 using Txt.Domain.Entities;
 using Txt.Domain.Repositories.Interfaces;
 using Txt.Shared.Commands;
+using Txt.Shared.Dtos;
 using Txt.Shared.ErrorModels;
 using Txt.Shared.Result;
 
 namespace Txt.Application.Commands;
 
-public class CreateNoteCommandHandler(INotesModuleRepository notesModuleRepository)
-    : ICommandHandler<CreateNoteCommand, Note>
+public class CreateNoteCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+    : ICommandHandler<CreateNoteCommand, NoteDto>
 {
-    public async Task<OneOf<Note, Error>> Handle(CreateNoteCommand request, CancellationToken cancellationToken)
+
+    public async Task<OneOf<NoteDto, Error>> Handle(CreateNoteCommand request, CancellationToken cancellationToken)
     {
         var note = new Note
         {
@@ -24,6 +26,6 @@ public class CreateNoteCommandHandler(INotesModuleRepository notesModuleReposito
 
         await notesModuleRepository.SaveAsync(cancellationToken);
 
-        return new(entry.Entity);
+        return new(mapper.Map<NoteDto>(entry.Entity));
     }
 }

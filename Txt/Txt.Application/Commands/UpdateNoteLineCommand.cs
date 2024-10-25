@@ -1,16 +1,17 @@
+using AutoMapper;
 using Txt.Application.Commands.Interfaces;
-using Txt.Domain.Entities;
 using Txt.Domain.Repositories.Interfaces;
 using Txt.Shared.Commands;
+using Txt.Shared.Dtos;
 using Txt.Shared.ErrorModels;
 using Txt.Shared.Result;
 
 namespace Txt.Application.Commands;
 
-public class UpdateNoteLineCommandHandler(INotesModuleRepository notesModuleRepository)
-    : ICommandHandler<UpdateNoteLineCommand, NoteLine>
+public class UpdateNoteLineCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+    : ICommandHandler<UpdateNoteLineCommand, NoteLineDto>
 {
-    public async Task<OneOf<NoteLine, Error>> Handle(UpdateNoteLineCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<NoteLineDto, Error>> Handle(UpdateNoteLineCommand request, CancellationToken cancellationToken)
     {
         var line = notesModuleRepository.FindNoteLine(request.LineId) ?? throw new KeyNotFoundException("Line was not found");
         if (request.Content != null)
@@ -26,6 +27,6 @@ public class UpdateNoteLineCommandHandler(INotesModuleRepository notesModuleRepo
 
         await notesModuleRepository.SaveAsync(cancellationToken);
 
-        return new(line);
+        return new(mapper.Map<NoteLineDto>(line));
     }
 }
