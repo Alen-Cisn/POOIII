@@ -8,18 +8,14 @@ using Txt.Shared.Queries;
 namespace Txt.Api.Controllers;
 
 [ApiController]
-[Route("notes/{noteId:int}/lines")]
+[Route("Notes/{noteId:int}/Lines")]
 [Authorize]
 public class LinesController(IMediator mediator) : ControllerBase
 {
 
     [HttpGet]
     public Task<List<NoteLineDto>> Get(int noteId, CancellationToken cancellationToken)
-        => mediator.Send(new NoteLineQuery(noteId: noteId), cancellationToken);
-
-    [HttpGet("{id:int}")]
-    public Task<List<NoteLineDto>> Get(int noteId, int id, CancellationToken cancellationToken)
-        => mediator.Send(new NoteLineQuery(noteId: noteId), cancellationToken);
+        => mediator.Send(new NoteLinesByNoteIdQuery(noteId: noteId), cancellationToken);
 
     [HttpPost]
     public async Task<ActionResult<NoteLineDto>> Post(int noteId, [FromBody] NoteLineDto noteLineDto)

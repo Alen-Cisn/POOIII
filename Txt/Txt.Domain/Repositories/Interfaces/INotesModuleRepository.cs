@@ -13,10 +13,13 @@ public interface INotesModuleRepository : ISavableRepository
     void UpdateNote(Note note);
     void DeleteNote(Note note);
 
-    IQueryable<NoteLine> FindAllNoteLines(Note note);
     NoteLine? FindNoteLine(int noteLineId);
+    IQueryable<NoteLine> FindAllNoteLines(Note note);
+    IQueryable<NoteLine> FindAllNoteLines(int noteId);
     Task<EntityEntry<NoteLine>> CreateNoteLineAsync(NoteLine noteLine, CancellationToken cancellationToken = default);
     EntityEntry<NoteLine> CreateNoteLine(NoteLine noteLine);
     void UpdateNoteLine(NoteLine noteLine);
     void DeleteNoteLine(NoteLine noteLine);
+
+    IQueryable<Folder> FindFoldersWhere(Expression<Func<Folder, bool>> expression);
 }

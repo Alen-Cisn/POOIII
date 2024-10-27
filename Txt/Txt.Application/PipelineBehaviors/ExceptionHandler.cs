@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Txt.Shared.Commands.Interfaces;
 using Txt.Shared.ErrorModels;
+using Txt.Shared.Exceptions;
 using Txt.Shared.Result;
 
 namespace Txt.Application.PipelineBehaviors;
@@ -17,6 +18,15 @@ public sealed class ExceptionHandler<TRequest, TResponse>(ILogger<ExceptionHandl
         try
         {
             return await next();
+        }
+        catch (ValidationException validationException)
+        {
+            logger.LogInformation(validationException, validationException.Message);
+            return new(new Error
+            {
+                ErrorCode = 400,
+                Details = validationException.Message!
+            });
         }
         catch (DbException dbException)
         {

@@ -15,6 +15,7 @@ public class NotesModuleRepository(
 {
     private NotesRepository NotesRepository { get; set; } = new NotesRepository(context, currentUserService);
     private NoteLinesRepository NoteLinesRepository { get; set; } = new NoteLinesRepository(context, currentUserService);
+    private FoldersRepository FoldersRepository { get; set; } = new FoldersRepository(context, currentUserService);
 
     public EntityEntry<Note> CreateNote(Note note)
         => NotesRepository.Create(note);
@@ -50,6 +51,8 @@ public class NotesModuleRepository(
     public IQueryable<NoteLine> FindAllNoteLines(Note note)
         => NoteLinesRepository.FindWhere(line => line.NoteId == note.Id);
 
+    public IQueryable<NoteLine> FindAllNoteLines(int noteId)
+        => NoteLinesRepository.FindWhere(line => line.NoteId == noteId);
     public NoteLine? FindNoteLine(int noteLineId)
         => NoteLinesRepository.FindWhere(line => line.Id == noteLineId).FirstOrDefault();
 
@@ -59,6 +62,8 @@ public class NotesModuleRepository(
     public IQueryable<Note> FindNotesWhere(Expression<Func<Note, bool>> expression)
         => NotesRepository.FindWhere(expression);
 
+    public IQueryable<Folder> FindFoldersWhere(Expression<Func<Folder, bool>> expression)
+        => FoldersRepository.FindWhere(expression);
     public Task<int> SaveAsync(CancellationToken cancellationToken = default)
         => context.SaveChangesAsync(cancellationToken);
 

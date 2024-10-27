@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Txt.Domain.Entities;
 using Txt.Shared.Commands;
 using Txt.Shared.Dtos;
 using Txt.Shared.Queries;
@@ -11,16 +10,16 @@ namespace Txt.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class NotesController(IMediator mediator) : ControllerBase
+public class FoldersController(IMediator mediator) : ControllerBase
 {
 
     [HttpGet]
-    public Task<List<NoteDto>> Get([FromQuery] int folderId, CancellationToken cancellationToken)
-        => mediator.Send(new NotesByFolderIdQuery(folderId: folderId), cancellationToken);
+    public Task<List<FolderDto>> Get([FromQuery] int folderId, CancellationToken cancellationToken)
+        => mediator.Send(new FoldersByParentFolderIdQuery(folderId: folderId), cancellationToken);
 
     [HttpGet(@"{id:int}")]
-    public Task<NoteDto> GetById(int id, CancellationToken cancellationToken)
-        => mediator.Send(new NoteByIdQuery(id), cancellationToken);
+    public Task<FolderDto> GetById(int id, CancellationToken cancellationToken)
+        => mediator.Send(new FolderByIdQuery(id), cancellationToken);
 
     [HttpPost]
     public async Task<ActionResult<NoteDto>> Post([FromBody] CreateNoteCommand command)

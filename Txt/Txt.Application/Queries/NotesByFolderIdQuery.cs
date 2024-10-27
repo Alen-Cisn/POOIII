@@ -8,14 +8,13 @@ using Txt.Shared.Queries;
 
 namespace Txt.Application.Queries;
 
-public class NoteQueryHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
-    : IRequestHandler<NoteQuery, List<NoteDto>>
+public class NotesByFolderIdQueryHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+    : IRequestHandler<NotesByFolderIdQuery, List<NoteDto>>
 {
-    public async Task<List<NoteDto>> Handle(NoteQuery request, CancellationToken cancellationToken)
+    public async Task<List<NoteDto>> Handle(NotesByFolderIdQuery request, CancellationToken cancellationToken)
     {
         List<Note> notes = await notesModuleRepository.FindNotesWhere(note =>
-            (request.Id == null || note.Id == request.Id)
-            && (request.FolderId == null || note.ParentId == request.FolderId)
+            note.ParentId == request.FolderId
         ).ToListAsync(cancellationToken: cancellationToken);
 
         return mapper.Map<List<NoteDto>>(notes);
