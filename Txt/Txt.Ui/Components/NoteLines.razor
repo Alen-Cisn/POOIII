@@ -1,0 +1,36 @@
+@using Txt.Shared.Dtos
+@using Txt.Ui.Services.Interfaces
+@inject INotesService NotesService
+@inject ISnackbar Snackbar
+
+<MudCard>
+    <MudCardContent>
+        @foreach (var noteLine in Lines)
+        {
+            <NoteLine Content="@noteLine.Content" Id="@noteLine.Id" OnLineUpdated="HandleLineUpdated" />
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter]
+    public IEnumerable<NoteLineDto> Lines { get; set; } = new NoteLineDto[0];
+
+    [Parameter]
+    public int NoteId { get; set; }
+
+    private async Task HandleLineUpdated((int Id, string Content) updatedLine)
+    {
+        var (id, updatedContent) = updatedLine;
+
+        NoteLineDto? line = Lines.FirstOrDefault(l => l.Id == id);
+        if (line == null)
+        {
+            Snackbar.Add("Line not found.", Severity.Error);
+            return;
+        }
+
+        line.Content = updatedContent;
+        await NotesService.UpdateNoteLineAsync(id, NoteId, updatedContent);
+    }
+}

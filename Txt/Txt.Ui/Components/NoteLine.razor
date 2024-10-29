@@ -1,0 +1,49 @@
+<MudCard>
+    <MudCardContent>
+        @if (isEditing)
+        {
+            <MudTextField @bind-Value="markdownContent" OnBlur="HandleBlur" OnFocus="HandleFocus" Multiline="false" />
+        }
+        else
+        {
+            <MudText Typo="Typo.body1" @onclick="HandleClick">
+                @((MarkupString)RenderHtml(markdownContent))
+            </MudText>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public string InitialContent { get; set; } = null!;
+    [Parameter] public int Id { get; set; }
+    [Parameter] public EventCallback<(int Id, string Content)> OnLineUpdated { get; set; }
+
+    private string markdownContent = null!;
+    private bool isEditing;
+
+    protected override void OnInitialized()
+    {
+        markdownContent = InitialContent;
+    }
+
+    private void HandleClick()
+    {
+        isEditing = true;
+    }
+
+    private void HandleFocus()
+    {
+        // Additional logic on focus if needed
+    }
+
+    private async Task HandleBlur()
+    {
+        isEditing = false;
+        await OnLineUpdated.InvokeAsync((Id, markdownContent));
+    }
+
+    private string RenderHtml(string markdown)
+    {
+        return Markdown.ToHtml(markdown);
+    }
+}

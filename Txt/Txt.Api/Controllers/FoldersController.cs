@@ -22,15 +22,15 @@ public class FoldersController(IMediator mediator) : ControllerBase
         => mediator.Send(new FolderByIdQuery(id), cancellationToken);
 
     [HttpPost]
-    public async Task<ActionResult<NoteDto>> Post([FromBody] CreateNoteCommand command)
-        => (await mediator.Send(command)).Match<ActionResult<NoteDto>>(
+    public async Task<ActionResult<FolderDto>> Post([FromBody] CreateFolderCommand command)
+        => (await mediator.Send(command)).Match<ActionResult<FolderDto>>(
             note => Ok(note),
             error => BadRequest()
             );
 
     [HttpPut]
-    public async Task<ActionResult<NoteDto>> Put([FromBody] UpdateNoteCommand command)
-        => (await mediator.Send(command)).Match<ActionResult<NoteDto>>(
+    public async Task<ActionResult<FolderDto>> Put([FromBody] UpdateFolderCommand command)
+        => (await mediator.Send(command)).Match<ActionResult<FolderDto>>(
             note => Ok(note),
             error => BadRequest()
             );

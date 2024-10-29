@@ -2,12 +2,12 @@
 namespace Txt.Shared.Exceptions;
 
 [Serializable]
-public class NotFoundExceptionException : Exception
+public class NotFoundException : Exception
 {
-    public NotFoundExceptionException() { }
-    public NotFoundExceptionException(string message) : base(message) { }
-    public NotFoundExceptionException(string message, Exception inner) : base(message, inner) { }
-    protected NotFoundExceptionException(
+    public NotFoundException() { }
+    public NotFoundException(string message) : base(message) { }
+    public NotFoundException(string message, Exception inner) : base(message, inner) { }
+    protected NotFoundException(
         System.Runtime.Serialization.SerializationInfo info,
         System.Runtime.Serialization.StreamingContext context)
     { }

@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Txt.Domain.Entities;
 using Txt.Shared.Commands;
 using Txt.Shared.Dtos;
 using Txt.Shared.Queries;

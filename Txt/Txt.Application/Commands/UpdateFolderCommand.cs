@@ -11,31 +11,29 @@ using Txt.Shared.Result;
 
 namespace Txt.Application.Commands;
 
-public class UpdateNoteCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
-    : ICommandHandler<UpdateNoteCommand, NoteDto>
+public class UpdateFolderCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+    : ICommandHandler<UpdateFolderCommand, FolderDto>
 {
-    public async Task<OneOf<NoteDto, Error>> Handle(UpdateNoteCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<FolderDto, Error>> Handle(UpdateFolderCommand request, CancellationToken cancellationToken)
     {
-        Folder folder = await notesModuleRepository
+        Folder parentFolder = await notesModuleRepository
             .FindFoldersWhere(f => f.Id == request.FolderId)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ValidationException("Given parent folder doesn't exist.");
 
-        var note = new Note
+        var folder = new Folder
         {
-            Id = request.NoteId,
+            Id = request.FolderId,
             Name = request.Name,
-            ParentId = request.FolderId,
-            Lines = [],
-            Path = folder.Path + "/" + request.Name
+            ParentId = request.ParentId,
+            Path = parentFolder + "/" + request.Name
         };
 
-        note.Lines = notesModuleRepository.FindAllNoteLines(note);
 
-        notesModuleRepository.UpdateNote(note);
+        notesModuleRepository.UpdateFolder(folder);
 
         await notesModuleRepository.SaveAsync(cancellationToken);
 
-        return new(mapper.Map<NoteDto>(note));
+        return new(mapper.Map<FolderDto>(folder));
     }
 }

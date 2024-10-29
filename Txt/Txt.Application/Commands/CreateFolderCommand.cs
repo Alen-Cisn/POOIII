@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Txt.Application.Commands.Interfaces;
 using Txt.Domain.Entities;
 using Txt.Domain.Repositories.Interfaces;
@@ -11,31 +12,28 @@ using Txt.Shared.Result;
 
 namespace Txt.Application.Commands;
 
-public class UpdateNoteCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
-    : ICommandHandler<UpdateNoteCommand, NoteDto>
+public class CreateFolderCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+    : ICommandHandler<CreateFolderCommand, FolderDto>
 {
-    public async Task<OneOf<NoteDto, Error>> Handle(UpdateNoteCommand request, CancellationToken cancellationToken)
+
+    public async Task<OneOf<FolderDto, Error>> Handle(CreateFolderCommand request, CancellationToken cancellationToken)
     {
         Folder folder = await notesModuleRepository
             .FindFoldersWhere(f => f.Id == request.FolderId)
             .FirstOrDefaultAsync(cancellationToken)
             ?? throw new ValidationException("Given parent folder doesn't exist.");
 
-        var note = new Note
+        Folder note = new()
         {
-            Id = request.NoteId,
             Name = request.Name,
             ParentId = request.FolderId,
-            Lines = [],
             Path = folder.Path + "/" + request.Name
         };
 
-        note.Lines = notesModuleRepository.FindAllNoteLines(note);
-
-        notesModuleRepository.UpdateNote(note);
+        EntityEntry<Folder> entry = notesModuleRepository.CreateFolder(note);
 
         await notesModuleRepository.SaveAsync(cancellationToken);
 
-        return new(mapper.Map<NoteDto>(note));
+        return new(mapper.Map<FolderDto>(entry.Entity));
     }
 }

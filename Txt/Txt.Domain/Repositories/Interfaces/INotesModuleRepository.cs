@@ -22,4 +22,6 @@ public interface INotesModuleRepository : ISavableRepository
     void DeleteNoteLine(NoteLine noteLine);
 
     IQueryable<Folder> FindFoldersWhere(Expression<Func<Folder, bool>> expression);
+    EntityEntry<Folder> CreateFolder(Folder folder);
+    void UpdateFolder(Folder folder);
 }

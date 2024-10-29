@@ -64,6 +64,13 @@ public class NotesModuleRepository(
 
     public IQueryable<Folder> FindFoldersWhere(Expression<Func<Folder, bool>> expression)
         => FoldersRepository.FindWhere(expression);
+
+    public EntityEntry<Folder> CreateFolder(Folder folder)
+        => FoldersRepository.Create(folder);
+
+    public void UpdateFolder(Folder folder)
+        => FoldersRepository.Update(folder);
+
     public Task<int> SaveAsync(CancellationToken cancellationToken = default)
         => context.SaveChangesAsync(cancellationToken);
 
