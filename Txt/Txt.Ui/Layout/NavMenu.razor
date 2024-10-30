@@ -1,11 +1,17 @@
-﻿<MudDrawer @bind-Open="Open">
+﻿<MudDrawer @bind-Open="Open" @bind-Clipmode="mode">
     @* <HeaderTemplate>
         <HxSidebarBrand BrandName="Brand name" BrandNameShort="BN" />
-    </HeaderTemplate> *@
+    </HeaderTemplate>
     <MudNavMenu>
         <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
         <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
         <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix">Weather</MudNavLink>
+    </MudNavMenu> *@
+
+    <MudNavMenu>
+        <MudNavLink>Pagina 1</MudNavLink>
+        <MudNavLink>Pagina 2</MudNavLink>
+        <MudNavLink>Pagina 3</MudNavLink>
     </MudNavMenu>
 
     @* <FooterTemplate>
@@ -16,4 +22,6 @@
 
 @code {
     private bool Open { get; set; } = true;
+
+    private DrawerClipMode mode { get; set; } = DrawerClipMode.Always;
 }

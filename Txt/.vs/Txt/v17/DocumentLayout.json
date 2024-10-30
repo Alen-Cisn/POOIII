@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Home.razor",
+              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "Txt.Ui\\Pages\\Home.razor",
+              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Pages\\Home.razor",
+              "RelativeToolTip": "Txt.Ui\\Pages\\Home.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-30T19:04:18.548Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "Txt.Ui\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "Txt.Ui\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-30T18:30:15.358Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Layout\\NavMenu.razor",
+              "RelativeDocumentMoniker": "Txt.Ui\\Layout\\NavMenu.razor",
+              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Layout\\NavMenu.razor",
+              "RelativeToolTip": "Txt.Ui\\Layout\\NavMenu.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-30T18:28:46.908Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
