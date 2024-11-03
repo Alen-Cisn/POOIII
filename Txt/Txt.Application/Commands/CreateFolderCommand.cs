@@ -18,16 +18,21 @@ public class CreateFolderCommandHandler(INotesModuleRepository notesModuleReposi
 
     public async Task<OneOf<FolderDto, Error>> Handle(CreateFolderCommand request, CancellationToken cancellationToken)
     {
-        Folder folder = await notesModuleRepository
-            .FindFoldersWhere(f => f.Id == request.FolderId)
-            .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new ValidationException("Given parent folder doesn't exist.");
+        string? parentFolderPath = null;
+        if (request.ParentFolderId != null)
+        {
+            Folder folder = await notesModuleRepository
+                .FindFoldersWhere(f => f.Id == request.ParentFolderId)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new ValidationException("Given parent folder doesn't exist.");
+            parentFolderPath = folder.Path;
+        }
 
         Folder note = new()
         {
             Name = request.Name,
-            ParentId = request.FolderId,
-            Path = folder.Path + "/" + request.Name
+            ParentId = request.ParentFolderId,
+            Path = parentFolderPath + "/" + request.Name
         };
 
         EntityEntry<Folder> entry = notesModuleRepository.CreateFolder(note);

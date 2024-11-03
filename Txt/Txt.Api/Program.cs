@@ -55,9 +55,9 @@ builder.Services
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddApplicationDependencies();
 builder.Services.AddLocalServices();
 builder.Services.AddRepositories();
-builder.Services.AddApplicationDependencies();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy => policy

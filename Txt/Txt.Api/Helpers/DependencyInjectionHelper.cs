@@ -1,5 +1,7 @@
 
+using MediatR;
 using Txt.Application.Helpers;
+using Txt.Application.PipelineBehaviors;
 using Txt.Application.Services;
 using Txt.Application.Services.Interfaces;
 using Txt.Domain.Repositories.Interfaces;

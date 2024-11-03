@@ -1,6 +1,9 @@
 using System.Net.Http.Json;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Win32.SafeHandles;
+using MudBlazor;
+using Txt.Shared.ErrorModels;
 using Txt.Ui.Helpers;
 using Txt.Ui.Models;
 using Txt.Ui.Services.HttpClients.Interfaces;
@@ -12,7 +15,8 @@ public class AuthService(
     IPublicClientService publicClientService,
     ILocalStorageService localStorage,
     NavigationManager navigationManager,
-    IServiceProvider serviceProvider
+    IServiceProvider serviceProvider,
+    ISnackbar snackbar
     ) : IAuthService
 {
     private HttpClient HttpClient { get; init; } = publicClientService.HttpClient;
@@ -49,6 +53,14 @@ public class AuthService(
                 navigationManager.NavigateTo("/");
             }
         }
+        else
+        {
+            var errorResponse = await response.Content.ReadFromJsonAsync<IdentityLoginError>(cancellationToken: cancellationToken);
+            if (errorResponse != null)
+            {
+                snackbar.Add("Incorrect password or email.", Severity.Error);
+            }
+        }
 
     }
     public async Task RegisterAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -62,6 +74,27 @@ public class AuthService(
         if (response.IsSuccessStatusCode)
         {
             await LoginAsync(email, password, cancellationToken);
+        }
+        else
+        {
+            var errorResponse = await response.Content.ReadFromJsonAsync<IdentityRegisterError>(cancellationToken: cancellationToken);
+            if (errorResponse != null)
+            {
+
+                HandleRegisterErrorResponse(errorResponse);
+            }
+            else
+            {
+                snackbar.Add("An unexpected error ocurred.", Severity.Error);
+            }
+        }
+    }
+
+    private void HandleRegisterErrorResponse(IdentityRegisterError errorResponse)
+    {
+        foreach (var message in errorResponse.Errors.SelectMany(e => e.Value))
+        {
+            snackbar.Add(message, Severity.Error);
         }
     }
 

@@ -13,7 +13,7 @@ public class NotesService(ITxtApiClientService clientService, ILogger<NotesServi
 {
     private HttpClient HttpClient { get; init; } = clientService.HttpClient;
 
-    private const string Endpoint = "/account";
+    private const string Endpoint = "/notes";
 
     public async Task<AccountInformation?> Get()
     {

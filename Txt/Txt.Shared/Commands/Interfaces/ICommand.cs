@@ -4,6 +4,6 @@ using Txt.Shared.Result;
 
 namespace Txt.Shared.Commands.Interfaces;
 
-public interface ICommand<TResult> : IRequest<OneOf<TResult, Error>>
+public interface ICommand<TResponse> : IRequest<OneOf<TResponse, Error>>
 {
 }
