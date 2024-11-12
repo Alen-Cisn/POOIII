@@ -1,0 +1,20 @@
+[package]
+name = "owner"
+version = "0.1.0"
+edition = "2021"
+
+# [env]
+# OUT_DIR = "."
+
+[dependencies]
+tonic = "0.12.3"
+prost = { version = "0.13.3", features = ["prost-derive"] }
+
+tokio = { version = "1", features = ["full"] }
+uuid = {version = "1.11.0", features = ["v4"]}
+futures = "0.3.31"
+
+
+[build-dependencies]
+tonic-build = "0.12"
+

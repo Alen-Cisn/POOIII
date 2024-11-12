@@ -2,6 +2,7 @@
 @using Txt.Ui.Services.Interfaces
 @inject INotesService NotesService
 @inject ISnackbar Snackbar
+@inject ILogger<NoteLines> Logger
 
 <MudCard>
     <MudCardContent>
@@ -21,6 +22,7 @@
 
     private async Task HandleLineUpdated((int Id, string Content) updatedLine)
     {
+        await new Task(() => { });
         var (id, updatedContent) = updatedLine;
 
         NoteLineDto? line = Lines.FirstOrDefault(l => l.Id == id);
@@ -31,6 +33,7 @@
         }
 
         line.Content = updatedContent;
-        await NotesService.UpdateNoteLineAsync(id, NoteId, updatedContent);
+        Logger.LogInformation("Note line updated!");
+        @* await NotesService.UpdateNoteLineAsync(id, NoteId, updatedContent); *@
     }
 }
