@@ -39,7 +39,10 @@ public class Program
         builder.Services.AddScoped<Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, AuthenticationStateProvider>();
 
         builder.Services.AddHttpClient<AuthenticationStateProvider>(client => client.BaseAddress = clientBaseAddress);
-        builder.Services.AddMudServices();
+        builder.Services.AddMudServices(cfg =>
+        {
+            cfg.SnackbarConfiguration.ShowTransitionDuration = 200;
+        });
 
         builder.Services.AddLocalServices();
         var app = builder.Build();

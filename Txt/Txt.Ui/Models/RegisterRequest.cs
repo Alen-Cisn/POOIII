@@ -4,15 +4,15 @@ namespace Txt.Ui.Models;
 
 public sealed class RegisterRequest
 {
-    [Required]
+    [Required(ErrorMessage = "Email is required.")]
     [RegularExpression(@"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", ErrorMessage = "Invalid email")]
-    public required string Email { get; set; }
+    public string Email { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Password is required.")]
     [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$", ErrorMessage = "Incorrect password format.")]
-    public required string Password { get; set; }
+    public string Password { get; set; } = null!;
 
-    [Required]
+    [Required(ErrorMessage = "Confirmation for password is required.")]
     [Compare(nameof(Password), ErrorMessage = "Passwords don't match.")]
-    public required string PasswordConfirmation { get; set; }
+    public string PasswordConfirmation { get; set; } = null!;
 }

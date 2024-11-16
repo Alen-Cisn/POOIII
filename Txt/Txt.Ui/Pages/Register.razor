@@ -7,48 +7,59 @@
 @using Txt.Ui.Services.Interfaces
 
 @inject IAuthService authService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Register</PageTitle>
+<MudContainer Class="mt-16" MaxWidth="@MaxWidth.Small">
 
-<h1>Register</h1>
-
-<div class="login-container">
-    <p class="status-message" role="status">Please, enter credentials</p>
     <EditForm Model="@registerRequest" OnValidSubmit="@RegisterSubmit">
         <DataAnnotationsValidator />
-        <div class="form-group">
-            <MudTextField @bind-Value="registerRequest.Email" Label="Email address" InputType="InputType.Email"
-                aria-label="User email." For="@(() => registerRequest.Email)" />
-        </div>
-        <MudTooltip Placement="Placement.Right"
-            Text="It should be at least 8 characters length, have an uppercase letter, a lowercase letter, and a digit.">
-            <div class="form-group">
-                <MudTextField @bind-Value="registerRequest.Password" Label="Password" InputType="InputType.Password"
-                    aria-label="User password." For="@(() => registerRequest.Password)" />
-            </div>
-        </MudTooltip>
-        <div class="form-group">
-            <MudTextField @bind-Value="registerRequest.PasswordConfirmation" Label="Confirm password"
-                InputType="InputType.Password" aria-label="User password confirmation."
-                For="@(() => registerRequest.PasswordConfirmation)" />
-        </div>
-        <div class="d-flex flex-row justify-content-end text-right">
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
-                Log in
-            </MudButton>
-            <a href="/login" class="col text-right">Log in</a>
-        </div>
+        <MudCard>
+            <MudCardContent>
+                <MudGrid Spacing="1">
+                    <MudItem sm="6">
+                        <MudText Align="Align.Center" Typo="Typo.h4" HtmlTag="h1" Class="m-5">Register</MudText>
+                        <MudTextField @bind-Value="registerRequest.Email" Label="Email address"
+                            InputType="InputType.Email" aria-label="User email." For="@(() => registerRequest.Email)" />
+                        <MudTooltip Placement="Placement.Right"
+                            Text="It should be at least 8 characters length, have an uppercase letter, a lowercase letter, and a digit.">
+                            <MudTextField @bind-Value="registerRequest.Password" Label="Password" Class="mt-10"
+                                InputType="InputType.Password" aria-label="User password."
+                                For="@(() => registerRequest.Password)" />
+                        </MudTooltip>
+                        <MudTextField @bind-Value="registerRequest.PasswordConfirmation" Label="Confirm password"
+                            InputType="InputType.Password" aria-label="User password confirmation."
+                            For="@(() => registerRequest.PasswordConfirmation)" Class="mt-10 mb-10" />
+                        <div class="d-flex flex-row justify-content-end text-right">
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                                Class="mr-auto">
+                                Register
+                            </MudButton>
+                            <MudButton OnClick="GoToLogin" Variant="Variant.Outlined" Color="Color.Primary"
+                                Class="w-auto">
+                                Go to login
+                            </MudButton>
+                        </div>
+                    </MudItem>
+                    <MudItem sm="1"></MudItem>
+                    <MudItem sm="5" Style="position: relative;">
+                        <div class="login__div--cloud-background">
+                            <div class="login__div--cloud-filter">
+                                <PresentationText />
+                            </div>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
     </EditForm>
-</div>
+</MudContainer>
 
 @code {
-    private RegisterRequest registerRequest = new()
-        {
-            Email = "",
-            Password = "",
-            PasswordConfirmation = "",
-        };
+    private RegisterRequest registerRequest = new();
 
     private Task RegisterSubmit()
     => authService.RegisterAsync(registerRequest.Email, registerRequest.Password);
+    private void GoToLogin()
+    => NavigationManager.NavigateTo("/Login");
 }

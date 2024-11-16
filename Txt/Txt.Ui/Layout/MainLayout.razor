@@ -1,19 +1,81 @@
 ﻿@inherits LayoutComponentBase
 @attribute [Authorize]
-<MudThemeProvider />
+<MudThemeProvider Theme="_theme" IsDarkMode="@false" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudLayout>
-    <MudAppBar >
+    <MudAppBar>
         <MudText>
             <h1>Txt</h1>
         </MudText>
-        <MudSpacer/>
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/Alen-Cisn/POOIII/tree/main/Txt" Target="_blank" />
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/Alen-Cisn/POOIII/tree/main/Txt"
+            Target="_blank" />
     </MudAppBar>
     <NavMenu />
     <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
+
+@code
+{
+    public static MudTheme _theme = new()
+        {
+            PaletteLight = new()
+            {
+                Primary = new MudBlazor.Utilities.MudColor(0x2ab0ffff),
+                Secondary = new MudBlazor.Utilities.MudColor(0xe76f51ff),
+                Info = new MudBlazor.Utilities.MudColor(0x3da5d9ff),
+                Success = new MudBlazor.Utilities.MudColor(0x6dbf4bff),
+                Error = new MudBlazor.Utilities.MudColor(0xff6f61ff),
+                Warning = new MudBlazor.Utilities.MudColor(0xf9c74fff),
+                ActionDefault = new MudBlazor.Utilities.MudColor(0x007bffff),
+                Background = new MudBlazor.Utilities.MudColor(0xfefefeff),
+                ActionDisabled = new MudBlazor.Utilities.MudColor(0xd3d3d3ff),
+                ActionDisabledBackground = new MudBlazor.Utilities.MudColor(0xf0f0f0ff),
+                AppbarBackground = new MudBlazor.Utilities.MudColor(0x343a40ff),
+                AppbarText = new MudBlazor.Utilities.MudColor(0xffffffff),
+                BackgroundGray = new MudBlazor.Utilities.MudColor(0xf2f4f8ff),
+                Black = new MudBlazor.Utilities.MudColor(0x000000ff),
+                Dark = new MudBlazor.Utilities.MudColor(0x212529ff),
+                DarkContrastText = new MudBlazor.Utilities.MudColor(0xffffffff),
+                Divider = new MudBlazor.Utilities.MudColor(0xe0e0e0ff),
+                DividerLight = new MudBlazor.Utilities.MudColor(0xf0f0f0ff),
+                DrawerBackground = new MudBlazor.Utilities.MudColor(0xffffffff),
+                DrawerIcon = new MudBlazor.Utilities.MudColor(0x495057ff),
+                DrawerText = new MudBlazor.Utilities.MudColor(0x212529ff),
+                ErrorContrastText = new MudBlazor.Utilities.MudColor(0xffffffff),
+                InfoContrastText = new MudBlazor.Utilities.MudColor(0xffffffff),
+                LinesDefault = new MudBlazor.Utilities.MudColor(0xced4daff),
+                LinesInputs = new MudBlazor.Utilities.MudColor(0xb1b3b5ff),
+                PrimaryContrastText = new MudBlazor.Utilities.MudColor(0xffffffff),
+                SecondaryContrastText = new MudBlazor.Utilities.MudColor(0xffffffff),
+                Skeleton = new MudBlazor.Utilities.MudColor(0xe7e7e7ff),
+                SuccessContrastText = new MudBlazor.Utilities.MudColor(0xffffffff),
+                Surface = new MudBlazor.Utilities.MudColor(0xffffffff),
+                TableHover = new MudBlazor.Utilities.MudColor(0xf2f4f8ff),
+                TableLines = new MudBlazor.Utilities.MudColor(0xe0e0e0ff),
+                TableStriped = new MudBlazor.Utilities.MudColor(0xf9f9f9ff),
+                Tertiary = new MudBlazor.Utilities.MudColor(0x6c757dff),
+                TertiaryContrastText = new MudBlazor.Utilities.MudColor(0xffffffff),
+                TextDisabled = new MudBlazor.Utilities.MudColor(0x868e96ff),
+                TextPrimary = new MudBlazor.Utilities.MudColor(0x212529ff),
+                TextSecondary = new MudBlazor.Utilities.MudColor(0x495057ff),
+                WarningContrastText = new MudBlazor.Utilities.MudColor(0x212529ff),
+                White = new MudBlazor.Utilities.MudColor(0xffffffff)
+            },
+            LayoutProperties = new LayoutProperties()
+            {
+                DefaultBorderRadius = "6px"
+            },
+            Typography = new Typography()
+            {
+                Default = new Default()
+                {
+                    FontFamily = new string[] { "Poppins", "sans-serif" },
+                }
+            }
+        };
+}

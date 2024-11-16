@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Win32.SafeHandles;
 using MudBlazor;
 using Txt.Shared.ErrorModels;
 using Txt.Ui.Helpers;
@@ -16,52 +16,68 @@ public class AuthService(
     ILocalStorageService localStorage,
     NavigationManager navigationManager,
     IServiceProvider serviceProvider,
-    ISnackbar snackbar
+    ISnackbar snackbar,
+    ILogger<AuthService> logger
     ) : IAuthService
 {
     private HttpClient HttpClient { get; init; } = publicClientService.HttpClient;
 
     public async Task LoginAsync(string email, string password, CancellationToken cancellationToken = default)
     {
-        var response = await HttpClient.PostAsJsonAsync("/authorization/login", new
+        try
         {
-            email,
-            password,
-        }, cancellationToken);
-
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken);
-            if (result == null)
+            var response = await HttpClient.PostAsJsonAsync("/authorization/login", new
             {
-                return;
-            }
+                email,
+                password,
+            }, cancellationToken);
 
-            _ = SaveAndNotifySession(result, cancellationToken);
-
-            var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
-            var queryStrings = System.Web.HttpUtility.ParseQueryString(uri.Query);
-            var returnUrl = queryStrings.Get("returnUrl");
-
-            if (!string.IsNullOrEmpty(returnUrl))
+            if (response.IsSuccessStatusCode)
             {
-                var returnUri = new Uri(returnUrl);
-                navigationManager.NavigateTo(returnUri.AbsolutePath);
+                var result = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken);
+                if (result == null)
+                {
+                    return;
+                }
+
+                _ = SaveAndNotifySession(result, cancellationToken);
+
+                var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+                var queryStrings = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                var returnUrl = queryStrings.Get("returnUrl");
+
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    var returnUri = new Uri(returnUrl);
+                    navigationManager.NavigateTo(returnUri.AbsolutePath);
+                }
+                else
+                {
+                    navigationManager.NavigateTo("/");
+                }
             }
             else
             {
-                navigationManager.NavigateTo("/");
+                var errorResponse = await response.Content.ReadFromJsonAsync<IdentityLoginError>(cancellationToken: cancellationToken);
+                if (errorResponse != null)
+                {
+                    snackbar.Add("Incorrect password or email.", Severity.Error);
+                }
             }
         }
-        else
+        catch (HttpRequestException httpEx)
         {
-            var errorResponse = await response.Content.ReadFromJsonAsync<IdentityLoginError>(cancellationToken: cancellationToken);
-            if (errorResponse != null)
-            {
-                snackbar.Add("Incorrect password or email.", Severity.Error);
-            }
+            logger.LogError(httpEx, "HTTP request error while fetching account information: {Message}", httpEx.Message);
+            snackbar.Add(httpEx.Message, Severity.Error);
         }
-
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while fetching account information: {Message}", jsonEx.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while fetching account information: {Message}", ex.Message);
+        }
     }
     public async Task RegisterAsync(string email, string password, CancellationToken cancellationToken = default)
     {

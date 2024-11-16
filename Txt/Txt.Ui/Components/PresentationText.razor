@@ -1,0 +1,50 @@
+<p class="p--presentation-style">
+    @presentationText
+</p>
+@code {
+    #region Presentation text
+    private string presentationText = "";
+    private string[] messages = { "Build your second brain", "Organize your ideas", "Write yourself" };
+    private int currentMessageIndex = 0;
+    private int currentCharIndex = 0;
+    private bool isDeleting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TypeText();
+    }
+
+    private async Task TypeText()
+    {
+        while (true)
+        {
+            if (isDeleting)
+            {
+                if (currentCharIndex > 0)
+                {
+                    presentationText = messages[currentMessageIndex].Substring(0, currentCharIndex--);
+                }
+                else
+                {
+                    isDeleting = false;
+                    currentMessageIndex = (currentMessageIndex + 1) % messages.Length;
+                }
+            }
+            else
+            {
+                if (currentCharIndex < messages[currentMessageIndex].Length)
+                {
+                    presentationText = messages[currentMessageIndex].Substring(0, ++currentCharIndex);
+                }
+                else
+                {
+                    isDeleting = true;
+                }
+            }
+
+            StateHasChanged();
+            await Task.Delay(isDeleting ? 100 : 250);
+        }
+    }
+    #endregion
+}

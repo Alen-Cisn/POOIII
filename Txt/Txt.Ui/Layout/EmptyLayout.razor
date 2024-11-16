@@ -1,5 +1,8 @@
 @inherits LayoutComponentBase
 
-<div class="main">
-    @Body
-</div>
+<MudThemeProvider Theme="MainLayout._theme" IsDarkMode="@false" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@Body

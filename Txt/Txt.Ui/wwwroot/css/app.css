@@ -108,56 +108,74 @@ code {
     color: #c02d76;
 }
 
-
-.login-container {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 300px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
+/*login*/
+.login__div--cloud-background {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: url('https://jooinn.com/images/cloudy-sky-124.jpg');
+    background-size: 40%;
     border-radius: 4px;
-    transition: border-color 0.3s;
+    -webkit-animation: slidein 100s;
+    animation: slidein 100s;
+
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-direction: alternate;
+    animation-direction: alternate;
 }
 
-.form-group input:focus {
-    border-color: #007bff;
-    outline: none;
+@-webkit-keyframes slidein {
+    from {
+        background-position: top;
+        background-size: 2000px;
+    }
+
+    to {
+        background-position: -100px 0px;
+        background-size: 1750px;
+    }
 }
 
-.submit-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
+@keyframes slidein {
+    from {
+        background-position: top;
+        background-size: 2000px;
+    }
+
+    to {
+        background-position: -100px 0px;
+        background-size: 1750px;
+    }
+
+}
+
+
+
+.login__div--cloud-filter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(75, 75, 250, 0.3);
     border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
-    transition: background-color 0.3s;
 }
 
-.submit-button:hover {
-    background-color: #0056b3;
-}
-
-.status-message {
+.p--presentation-style {
     text-align: center;
-    margin-bottom: 20px;
-    color: #555;
+    color: white;
+    font-size: xx-large;
+    font-family: 'Source Code Pro', monospace;
+    text-transform: uppercase;
 }
