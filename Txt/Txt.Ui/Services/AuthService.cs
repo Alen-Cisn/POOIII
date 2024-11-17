@@ -81,28 +81,45 @@ public class AuthService(
     }
     public async Task RegisterAsync(string email, string password, CancellationToken cancellationToken = default)
     {
-        var response = await HttpClient.PostAsJsonAsync("/authorization/register", new
+        try
         {
-            email,
-            password,
-        }, cancellationToken);
-
-        if (response.IsSuccessStatusCode)
-        {
-            await LoginAsync(email, password, cancellationToken);
-        }
-        else
-        {
-            var errorResponse = await response.Content.ReadFromJsonAsync<IdentityRegisterError>(cancellationToken: cancellationToken);
-            if (errorResponse != null)
+            var response = await HttpClient.PostAsJsonAsync("/authorization/register", new
             {
+                email,
+                password,
+            }, cancellationToken);
 
-                HandleRegisterErrorResponse(errorResponse);
+            if (response.IsSuccessStatusCode)
+            {
+                await LoginAsync(email, password, cancellationToken);
             }
             else
             {
-                snackbar.Add("An unexpected error ocurred.", Severity.Error);
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                var errorResponse = JsonSerializer.Deserialize<IdentityRegisterError>(content);
+                if (errorResponse != null)
+                {
+
+                    HandleRegisterErrorResponse(errorResponse);
+                }
+                else
+                {
+                    snackbar.Add("An unexpected error ocurred.", Severity.Error);
+                }
             }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, "HTTP request error while fetching account information: {Message}", httpEx.Message);
+            snackbar.Add(httpEx.Message, Severity.Error);
+        }
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while fetching account information: {Message}", jsonEx.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while fetching account information: {Message}", ex.Message);
         }
     }
 
@@ -121,18 +138,21 @@ public class AuthService(
             RefreshToken = refreshToken
         }, cancellationToken);
 
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken);
-            if (result != null)
-            {
-                _ = SaveAndNotifySession(result, cancellationToken);
-
-                return result.AccessToken;
-            }
+            navigationManager.NavigateTo("/login");
+            return null;
         }
 
-        return null;
+        var result = await response.Content.ReadFromJsonAsync<AccessTokenResponse>(cancellationToken);
+        if (result == null)
+        {
+            return null;
+        }
+
+        _ = SaveAndNotifySession(result, cancellationToken);
+
+        return result.AccessToken;
     }
 
     public Task LogoutAsync(CancellationToken cancellationToken = default)

@@ -8,17 +8,52 @@
     <MudCardContent>
         @foreach (var noteLine in Lines)
         {
-            <NoteLine Content="@noteLine.Content" Id="@noteLine.Id" OnLineUpdated="HandleLineUpdated" />
+            <NoteLine InitialContent="@noteLine.Content" Id="@noteLine.Id" OnLineUpdated="HandleLineUpdated"
+                OnRequestFocus="HandleRequestFocus" />
         }
     </MudCardContent>
 </MudCard>
 
 @code {
     [Parameter]
-    public IEnumerable<NoteLineDto> Lines { get; set; } = new NoteLineDto[0];
+    public IEnumerable<NoteLineDto> Lines { get; set; } = new NoteLineDto[2]
+    {
+new NoteLineDto() {
+Content = "##Tremendo!",
+NoteId=1,
+OrderIndex=2,
+},
+new NoteLineDto() {
+Content = "##Fenciona!",
+NoteId=1,
+OrderIndex=2,
+},
+    };
 
     [Parameter]
     public int NoteId { get; set; }
+
+    private int? currentFocusedId;
+
+    private async Task HandleRequestFocus(int id)
+    {
+        if (currentFocusedId != id)
+        {
+            currentFocusedId = id;
+            StateHasChanged(); // Re-render to update focus
+        }
+
+        // Optionally, you can set a delay here if needed for better UX
+        await Task.Delay(50);
+
+        // Set the corresponding NoteLine to editing mode if it exists
+        var lineToEdit = Lines.FirstOrDefault(l => l.Id == currentFocusedId);
+        if (lineToEdit != null)
+        {
+            // Logic to trigger editing mode on this specific line can be added here if needed.
+            // This may involve invoking a method on the NoteLine component if necessary.
+        }
+    }
 
     private async Task HandleLineUpdated((int Id, string Content) updatedLine)
     {

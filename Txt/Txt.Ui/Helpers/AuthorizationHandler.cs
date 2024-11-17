@@ -1,11 +1,16 @@
 
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Txt.Ui.Services.Interfaces;
 
 namespace Txt.Ui.Helpers;
 
-internal class AuthorizationHandler(ILocalStorageService localStorage, IAuthService authService) : DelegatingHandler
+internal class AuthorizationHandler(
+    ILocalStorageService localStorage,
+    NavigationManager navigationManager,
+    IAuthService authService
+) : DelegatingHandler
 {
     const int minutesSpan = 2;
 
@@ -18,6 +23,7 @@ internal class AuthorizationHandler(ILocalStorageService localStorage, IAuthServ
             var refreshToken = await localStorage.GetItemAsync<string>("refreshToken", cancellationToken);
             if (string.IsNullOrEmpty(refreshToken))
             {
+                navigationManager.NavigateTo("/login");
                 return new HttpResponseMessage()
                 {
                     StatusCode = System.Net.HttpStatusCode.Forbidden,

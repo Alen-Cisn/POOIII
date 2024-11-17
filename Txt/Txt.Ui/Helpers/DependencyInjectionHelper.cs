@@ -12,6 +12,7 @@ public static class DependencyInjectionHelper
         services.AddScoped<ITxtApiClientService, TxtApiClientService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<INotesService, NotesService>();
 
         return services;
     }

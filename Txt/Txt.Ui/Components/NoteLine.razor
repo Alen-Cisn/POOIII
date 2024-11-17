@@ -1,23 +1,23 @@
 @namespace Txt.Ui.Components
-<MudCard>
-    <MudCardContent>
-        @if (isEditing)
-        {
-            <MudTextField @bind-Value="markdownContent" OnBlur="HandleBlur" OnFocus="HandleFocus" Multiline="false" />
-        }
-        else
-        {
-            <MudText Typo="Typo.body1" @onclick="HandleClick">
-                @((MarkupString)RenderHtml(markdownContent))
-            </MudText>
-        }
-    </MudCardContent>
-</MudCard>
+
+@if (isEditing)
+{
+    <MudTextField @bind-Value="markdownContent" @onblur="HandleBlur" @onfocus="HandleFocus" @onkeydown="HandleKeyDown"
+    Multiline="true" />
+}
+else
+{
+    <MudText Typo="Typo.body1" @onclick="HandleClick" focus>
+    @RenderHtml(markdownContent)
+</MudText>
+}
 
 @code {
     [Parameter] public string InitialContent { get; set; } = null!;
     [Parameter] public int Id { get; set; }
     [Parameter] public EventCallback<(int Id, string Content)> OnLineUpdated { get; set; }
+    [Parameter] public EventCallback<int> OnRequestFocus { get; set; }
+    [Parameter] public bool IsFocused { get; set; }
 
     private string markdownContent = null!;
     private bool isEditing;
@@ -30,11 +30,22 @@
     private void HandleClick()
     {
         isEditing = true;
+        OnRequestFocus.InvokeAsync(Id);
     }
 
     private void HandleFocus()
     {
-        // Additional logic on focus if needed
+    }
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "ArrowUp")
+        {
+            OnRequestFocus.InvokeAsync(Id - 1);
+        }
+        else if (e.Key == "ArrowDown")
+        {
+            OnRequestFocus.InvokeAsync(Id + 1);
+        }
     }
 
     private async Task HandleBlur()
@@ -43,8 +54,8 @@
         await OnLineUpdated.InvokeAsync((Id, markdownContent));
     }
 
-    private string RenderHtml(string markdown)
+    private MarkupString RenderHtml(string markdown)
     {
-        return Markdown.ToHtml(markdown);
+        return (MarkupString)Markdown.ToHtml(markdown);
     }
 }
