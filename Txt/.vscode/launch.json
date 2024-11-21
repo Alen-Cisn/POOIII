@@ -5,7 +5,7 @@
             "name": "ASP.NET Core Launch (web)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
+            "preLaunchTask": "buildApi",
             "program": "${workspaceFolder}/Txt.Api/bin/Debug/net8.0/Txt.Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}",

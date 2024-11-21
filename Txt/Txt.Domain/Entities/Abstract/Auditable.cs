@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Txt.Domain.Entities.Abstract;
 
-public abstract class Auditable : IAuditable
+public abstract class Auditable
 {
     [Required]
     [ForeignKey("CreatedBy")]

@@ -16,19 +16,23 @@ public class UpdateFolderCommandHandler(INotesModuleRepository notesModuleReposi
 {
     public async Task<OneOf<FolderDto, Error>> Handle(UpdateFolderCommand request, CancellationToken cancellationToken)
     {
-        Folder parentFolder = await notesModuleRepository
+        throw new ValidationException("You shuld see this as an error.");
+        Folder folder = await notesModuleRepository
             .FindFoldersWhere(f => f.Id == request.FolderId)
             .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new ValidationException("Given parent folder doesn't exist.");
+            ?? throw new NotFoundException("The given folder doesn't exist.");
 
-        var folder = new Folder
+        folder.Name = request.Name;
+
+        if (folder.ParentId != request.ParentId && request.ParentId != null)
         {
-            Id = request.FolderId,
-            Name = request.Name,
-            ParentId = request.ParentId,
-            Path = parentFolder + "/" + request.Name
-        };
+            Folder parentFolder = await notesModuleRepository
+                .FindFoldersWhere(f => f.Id == request.ParentId)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new NotFoundException("The given parent folder doesn't exist.");
 
+            folder.ParentId = parentFolder.Id;
+        }
 
         notesModuleRepository.UpdateFolder(folder);
 

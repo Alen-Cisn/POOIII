@@ -14,7 +14,7 @@ public class FoldersController(IMediator mediator) : ControllerBase
 {
 
     [HttpGet]
-    public Task<List<FolderDto>> Get([FromQuery] int folderId, CancellationToken cancellationToken)
+    public Task<List<FolderDto>> Get([FromQuery] int? folderId, CancellationToken cancellationToken)
         => mediator.Send(new FoldersByParentFolderIdQuery(folderId: folderId), cancellationToken);
 
     [HttpGet(@"{id:int}")]

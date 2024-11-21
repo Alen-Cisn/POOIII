@@ -1,6 +1,7 @@
 
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Txt.Application.Commands;
 using Txt.Application.PipelineBehaviors;
 using Txt.Domain.Entities;
 using Txt.Shared.ErrorModels;
@@ -15,6 +16,7 @@ public static class ServicesHelper
             cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
             cfg.RegisterServicesFromAssemblies(typeof(Error).Assembly);
             cfg.RegisterServicesFromAssemblies(typeof(Note).Assembly);
+            cfg.RegisterServicesFromAssemblyContaining<UpdateFolderCommandHandler>();
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ExceptionHandler<,>), ServiceLifetime.Transient);
         });
 

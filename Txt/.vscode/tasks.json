@@ -14,6 +14,18 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "buildApi",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/Txt.Api/Txt.Api.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
       "label": "publish",
       "command": "dotnet",
       "type": "process",
@@ -34,6 +46,18 @@
         "run",
         "--project",
         "${workspaceFolder}/Txt.Ui/Txt.Ui.csproj"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watchApi",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "--project",
+        "${workspaceFolder}/Txt.Api/Txt.Api.csproj"
       ],
       "problemMatcher": "$msCompile"
     }
