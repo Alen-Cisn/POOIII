@@ -1,5 +1,7 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Txt.Application.Commands.Interfaces;
+using Txt.Application.PipelineBehaviors;
 using Txt.Domain.Entities;
 using Txt.Domain.Repositories.Interfaces;
 using Txt.Shared.Commands;
@@ -9,22 +11,29 @@ using Txt.Shared.Result;
 
 namespace Txt.Application.Commands;
 
-public class CreateNoteLineCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+public class CreateNoteLineCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper, ILogger<CreateNoteLineCommandHandler> logger)
     : ICommandHandler<CreateNoteLineCommand, NoteLineDto>
 {
     public async Task<OneOf<NoteLineDto, Error>> Handle(CreateNoteLineCommand request, CancellationToken cancellationToken)
     {
-        var note = new NoteLine
+        try
         {
-            NoteId = request.NoteId,
-            Content = request.Content,
-            OrderIndex = request.OrderIndex,
-        };
+            var note = new NoteLine
+            {
+                NoteId = request.NoteId,
+                Content = request.Content,
+                OrderIndex = request.OrderIndex,
+            };
 
-        var entry = notesModuleRepository.CreateNoteLine(note);
+            var entry = notesModuleRepository.CreateNoteLine(note);
 
-        await notesModuleRepository.SaveAsync(cancellationToken);
+            await notesModuleRepository.SaveAsync(cancellationToken);
 
-        return new(mapper.Map<NoteLineDto>(entry.Entity));
+            return new(mapper.Map<NoteLineDto>(entry.Entity));
+        }
+        catch (Exception ex)
+        {
+            return new(ExceptionHandlerExtension.HandleException(ex, logger));
+        }
     }
 }

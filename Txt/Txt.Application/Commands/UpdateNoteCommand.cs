@@ -1,6 +1,8 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Txt.Application.Commands.Interfaces;
+using Txt.Application.PipelineBehaviors;
 using Txt.Domain.Entities;
 using Txt.Domain.Repositories.Interfaces;
 using Txt.Shared.Commands;
@@ -11,31 +13,40 @@ using Txt.Shared.Result;
 
 namespace Txt.Application.Commands;
 
-public class UpdateNoteCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+public class UpdateNoteCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper, ILogger<UpdateNoteCommandHandler> logger)
     : ICommandHandler<UpdateNoteCommand, NoteDto>
 {
     public async Task<OneOf<NoteDto, Error>> Handle(UpdateNoteCommand request, CancellationToken cancellationToken)
     {
-        Folder folder = await notesModuleRepository
-            .FindFoldersWhere(f => f.Id == request.FolderId)
-            .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new ValidationException("Given parent folder doesn't exist.");
-
-        var note = new Note
+        try
         {
-            Id = request.NoteId,
-            Name = request.Name,
-            ParentId = request.FolderId,
-            Lines = [],
-            Path = folder.Path + "/" + request.Name
-        };
+            var note = await notesModuleRepository
+                .FindNotesWhere(note => note.Id == request.NoteId)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new NotFoundException("Given note doesn't exist.");
 
-        note.Lines = notesModuleRepository.FindAllNoteLines(note);
+            note.Id = request.NoteId;
+            note.Name = request.Name;
+            note.ParentId = request.ParentId;
 
-        notesModuleRepository.UpdateNote(note);
+            if (note.ParentId != request.ParentId)
+            {
+                Folder folder = await notesModuleRepository
+                    .FindFoldersWhere(f => f.Id == request.ParentId)
+                    .FirstOrDefaultAsync(cancellationToken)
+                    ?? throw new ValidationException("Given parent folder doesn't exist.");
+                note.Path = folder.Path + "/" + request.Name;
+            }
 
-        await notesModuleRepository.SaveAsync(cancellationToken);
+            notesModuleRepository.UpdateNote(note);
 
-        return new(mapper.Map<NoteDto>(note));
+            await notesModuleRepository.SaveAsync(cancellationToken);
+
+            return new(mapper.Map<NoteDto>(note));
+        }
+        catch (Exception ex)
+        {
+            return new(ExceptionHandlerExtension.HandleException(ex, logger));
+        }
     }
 }

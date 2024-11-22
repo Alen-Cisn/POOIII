@@ -1,27 +1,117 @@
-﻿<MudDrawer @bind-Open="Open" @bind-Clipmode="mode">
-    @* <HeaderTemplate>
-        <HxSidebarBrand BrandName="Brand name" BrandNameShort="BN" />
-    </HeaderTemplate>
-    <MudNavMenu>
-        <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
-        <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
-        <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix">Weather</MudNavLink>
-    </MudNavMenu> *@
+﻿@using Txt.Shared.Dtos
+@using Txt.Ui.Services.Interfaces
+@inject ISnackbar Snackbar
 
-    <MudNavMenu>
-        <MudNavLink>Pagina 1</MudNavLink>
-        <MudNavLink>Pagina 2</MudNavLink>
-        <MudNavLink>Pagina 3</MudNavLink>
-    </MudNavMenu>
+@inject INotesService NotesService
+@inject ILogger<NavMenu> Logger
 
-    @* <FooterTemplate>
-        <HxSidebarFooter Href="/login" Icon="BootstrapIcon.Person"
-            Text="@(context.SidebarCollapsed ? null : "Login")" />
-    </FooterTemplate> *@
+<MudDrawer @bind-Open="Open" @bind-Clipmode="mode">
+
+    <MudTreeView T="FolderOrNote" Items="@treeItems" ItemText="Value.Name" ItemChildren="Children" ReadOnly>
+        <ItemTemplate>
+            <MudTreeViewItem Value="@context.Value" Icon="@context.Icon" LoadingIconColor="Color.Info"
+                CanExpand="@context.Expandable" Text="@context.Value?.Name" Items="@context?.Children" Visible="true">
+                <Content>
+                    <MudTreeViewItemToggleButton @bind-Expanded="@context.Expanded"
+                        Visible="@(context?.HasChildren ?? false)" />
+                    <MudIcon Icon="@context?.Icon" Class="ml-0 mr-2" Color="@Color.Default" />
+                    <MudText>@context?.Value?.Name</MudText>
+                    @if (!(context?.HasChildren ?? false))
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Primary"
+                            Size="Size.Small" Class="position-absolute end-0 mr-2" />
+                    }
+                </Content>
+            </MudTreeViewItem>
+        </ItemTemplate>
+    </MudTreeView>
 </MudDrawer>
 
 @code {
     private bool Open { get; set; } = true;
 
     private DrawerClipMode mode { get; set; } = DrawerClipMode.Always;
+    private HashSet<TreeItemData<FolderOrNote>> treeItems = new HashSet<TreeItemData<FolderOrNote>>();
+
+    internal class FolderOrNote
+    {
+        internal enum TypeEnum
+        {
+            Folder,
+            Note
+        }
+        internal TypeEnum Type { get; set; }
+        internal int Id { get; set; }
+        internal string Name { get; set; }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var rootFolder = await NotesService.GetRootFolderAsync();
+        if (rootFolder == null)
+        {
+            Snackbar.Add("There was an error retrieving the root folder.", Severity.Error);
+            return;
+        }
+        treeItems = BuildTreeItems([rootFolder]);
+        StateHasChanged();
+
+    }
+
+    private HashSet<TreeItemData<FolderOrNote>> BuildTreeItems(IEnumerable<FolderDto> folders)
+    {
+        var treeItems = new HashSet<TreeItemData<FolderOrNote>>();
+
+        foreach (var folder in folders)
+        {
+            HashSet<TreeItemData<FolderOrNote>> childrenItems = new HashSet<TreeItemData<FolderOrNote>>();
+
+            if (folder.ChildrenFolders != null && folder.ChildrenFolders.Any())
+            {
+                childrenItems.UnionWith(BuildTreeItems(folder.ChildrenFolders));
+            }
+
+            if (folder.ChildrenNotes != null)
+            {
+                foreach (var note in folder.ChildrenNotes)
+                {
+                    childrenItems.Add(new TreeItemData<FolderOrNote>
+                        {
+                            Value = new FolderOrNote
+                            {
+                                Type = FolderOrNote.TypeEnum.Note,
+                                Id = note.Id,
+                                Name = note.Name
+                            },
+                            Icon = Icons.Material.Outlined.Note,
+                            Children = null,
+                            Expandable = false,
+                            Text = note.Name // Use note name for display
+                        });
+                }
+            }
+
+
+            var treeItem = new TreeItemData<FolderOrNote>()
+                {
+                    Value = new FolderOrNote()
+                    {
+                        Type = FolderOrNote.TypeEnum.Folder,
+                        Id = folder.Id,
+                        Name = folder.Name
+                    },
+                    Icon = Icons.Material.Outlined.Folder,
+                    Children = childrenItems.ToList(),
+                    Expandable = childrenItems.Any(),
+                    Text = folder.Name,
+                    Expanded = true,
+                    Visible = true
+                };
+            treeItems.Add(treeItem);
+        }
+
+        return treeItems;
+    }
+
 }

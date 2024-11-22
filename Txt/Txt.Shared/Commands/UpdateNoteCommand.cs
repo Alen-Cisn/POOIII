@@ -9,5 +9,5 @@ public class UpdateNoteCommand : ICommand<NoteDto>
     public required int NoteId { get; set; }
     [Length(1, 180, ErrorMessage = "Name can't be empty.")]
     public required string Name { get; set; }
-    public required int FolderId { get; set; }
+    public required int ParentId { get; set; }
 }

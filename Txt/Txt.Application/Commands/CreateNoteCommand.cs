@@ -1,7 +1,9 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Logging;
 using Txt.Application.Commands.Interfaces;
+using Txt.Application.PipelineBehaviors;
 using Txt.Domain.Entities;
 using Txt.Domain.Repositories.Interfaces;
 using Txt.Shared.Commands;
@@ -12,29 +14,36 @@ using Txt.Shared.Result;
 
 namespace Txt.Application.Commands;
 
-public class CreateNoteCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+public class CreateNoteCommandHandler(INotesModuleRepository notesModuleRepository, IMapper mapper, ILogger<CreateNoteCommandHandler> logger)
     : ICommandHandler<CreateNoteCommand, NoteDto>
 {
 
     public async Task<OneOf<NoteDto, Error>> Handle(CreateNoteCommand request, CancellationToken cancellationToken)
     {
-        Folder folder = await notesModuleRepository
-            .FindFoldersWhere(f => f.Id == request.FolderId)
-            .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new ValidationException("Given parent folder doesn't exist.");
-
-        Note note = new()
+        try
         {
-            Name = request.Name,
-            ParentId = request.FolderId,
-            Lines = [],
-            Path = folder.Path + "/" + request.Name
-        };
+            Folder folder = await notesModuleRepository
+                .FindFoldersWhere(f => f.Id == request.ParentId)
+                .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new ValidationException("Given parent folder doesn't exist.");
 
-        EntityEntry<Note> entry = notesModuleRepository.CreateNote(note);
+            Note note = new()
+            {
+                Name = request.Name,
+                ParentId = request.ParentId,
+                Lines = [],
+                Path = folder.Path + "/" + request.Name
+            };
 
-        await notesModuleRepository.SaveAsync(cancellationToken);
+            EntityEntry<Note> entry = notesModuleRepository.CreateNote(note);
 
-        return new(mapper.Map<NoteDto>(entry.Entity));
+            await notesModuleRepository.SaveAsync(cancellationToken);
+
+            return new(mapper.Map<NoteDto>(entry.Entity));
+        }
+        catch (Exception ex)
+        {
+            return new(ExceptionHandlerExtension.HandleException(ex, logger));
+        }
     }
 }
