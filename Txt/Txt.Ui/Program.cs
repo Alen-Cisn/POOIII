@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using Txt.Ui.Helpers;
-
+using Microsoft.Extensions.DependencyInjection;
 namespace Txt.Ui;
 
 public class Program
@@ -16,7 +16,7 @@ public class Program
         builder.RootComponents.Add<HeadOutlet>("head::after");
 
         var clientBaseAddress = new Uri(builder.Configuration["apiurl"]
-            ?? throw new NoNullAllowedException("apirul is null (reading from config file)"));
+            ?? throw new NoNullAllowedException("apiurl is null (reading from config file)"));
 
         builder.Services.AddHttpClient("Public.Txt.Api", client => client.BaseAddress = clientBaseAddress);
 
@@ -32,7 +32,6 @@ public class Program
             {
                 dh.Add(sp.GetRequiredService<AuthorizationHandler>());
             });
-
         builder.Services.AddBlazoredLocalStorage();
 
         builder.Services.AddScoped<AuthenticationStateProvider>();

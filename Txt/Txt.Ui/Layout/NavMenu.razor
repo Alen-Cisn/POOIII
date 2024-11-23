@@ -1,31 +1,27 @@
 ﻿@using Txt.Shared.Dtos
 @using Txt.Ui.Services.Interfaces
 @inject ISnackbar Snackbar
-
 @inject INotesService NotesService
 @inject ILogger<NavMenu> Logger
 
 <MudDrawer @bind-Open="Open" @bind-Clipmode="mode">
 
-    <MudTreeView T="FolderOrNote" Items="@treeItems" ItemText="Value.Name" ItemChildren="Children" ReadOnly>
+    <MudTreeView T="FolderOrNote" Items="@treeItems" ReadOnly>
         <ItemTemplate>
-            <MudTreeViewItem Value="@context.Value" Icon="@context.Icon" LoadingIconColor="Color.Info"
-                CanExpand="@context.Expandable" Text="@context.Value?.Name" Items="@context?.Children" Visible="true">
-                <Content>
-                    <MudTreeViewItemToggleButton @bind-Expanded="@context.Expanded"
-                        Visible="@(context?.HasChildren ?? false)" />
-                    <MudIcon Icon="@context?.Icon" Class="ml-0 mr-2" Color="@Color.Default" />
+            <MudTreeViewItem Icon="@context.Icon" Text="@context.Value?.Name" Items="@context?.Children">
+                <BodyContent Context="item">
                     <MudText>@context?.Value?.Name</MudText>
                     @if (!(context?.HasChildren ?? false))
                     {
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Outlined" Color="Color.Primary"
                             Size="Size.Small" Class="position-absolute end-0 mr-2" />
                     }
-                </Content>
+                </BodyContent>
             </MudTreeViewItem>
         </ItemTemplate>
     </MudTreeView>
 </MudDrawer>
+
 
 @code {
     private bool Open { get; set; } = true;
@@ -42,7 +38,7 @@
         }
         internal TypeEnum Type { get; set; }
         internal int Id { get; set; }
-        internal string Name { get; set; }
+        internal string Name { get; set; } = null!;
     }
 
 
@@ -54,9 +50,24 @@
             Snackbar.Add("There was an error retrieving the root folder.", Severity.Error);
             return;
         }
-        treeItems = BuildTreeItems([rootFolder]);
+        treeItems = BuildTree(rootFolder);
         StateHasChanged();
 
+    }
+
+
+
+    private HashSet<TreeItemData<FolderOrNote>> BuildTree(FolderDto rootFolder)
+    {
+        if (rootFolder.ChildrenFolders != null && rootFolder.ChildrenFolders.Count() > 0)
+        {
+
+            return BuildTreeItems(rootFolder.ChildrenFolders);
+        }
+        else
+        {
+            return new();
+        }
     }
 
     private HashSet<TreeItemData<FolderOrNote>> BuildTreeItems(IEnumerable<FolderDto> folders)

@@ -16,8 +16,7 @@ internal class AuthorizationHandler(
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        string? accessToken = null;
-        Console.WriteLine("Here! I'm doing a request.");
+        string? accessToken = null!;
         if (await IsAccessTokenExpiringSoon(cancellationToken))
         {
             var refreshToken = await localStorage.GetItemAsync<string>("refreshToken", cancellationToken);

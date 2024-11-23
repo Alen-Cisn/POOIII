@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "buildApi",
-            "program": "${workspaceFolder}/Txt.Api/bin/Debug/net8.0/Txt.Api.dll",
+            "program": "${workspaceFolder}/Txt.Api/bin/Debug/net9.0/Txt.Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

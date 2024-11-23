@@ -133,7 +133,7 @@ public class AuthService(
 
     public async Task<string?> RefreshSession(string refreshToken, CancellationToken cancellationToken = default)
     {
-        var response = await HttpClient.PostAsJsonAsync("/authorization/refresh-token", new
+        var response = await HttpClient.PostAsJsonAsync("/authorization/refresh", new
         {
             RefreshToken = refreshToken
         }, cancellationToken);
