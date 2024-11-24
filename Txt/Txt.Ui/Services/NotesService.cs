@@ -1,12 +1,9 @@
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using MudBlazor;
 using Txt.Shared.Commands;
 using Txt.Shared.Dtos;
 using Txt.Shared.ErrorModels;
-using Txt.Shared.Queries;
 using Txt.Ui.Services.HttpClients.Interfaces;
 using Txt.Ui.Services.Interfaces;
 
@@ -110,6 +107,7 @@ public class NotesService(ITxtApiClientService clientService, ILogger<NotesServi
         }
         return null;
     }
+
     public async Task<IEnumerable<NoteDto>> GetNotesByParentIdAsync(int parentId)
     {
         try
@@ -265,6 +263,111 @@ public class NotesService(ITxtApiClientService clientService, ILogger<NotesServi
         catch (Exception ex)
         {
             logger.LogError(ex, "An unexpected error occurred while creating note: {Message}", ex.Message);
+            error = "Unexpected error";
+        }
+        return new()
+        {
+            Details = error
+        };
+    }
+
+    public async Task<Error?> DeleteNoteAsync(int noteId)
+    {
+        string? error;
+        try
+        {
+            var result = await HttpClient.DeleteAsync(NotesEndpoint + "/" + noteId);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return result.Content.ReadFromJsonAsync<Error>().Result;
+            }
+
+            return null;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, "HTTP request error while deleting note: {Message}", httpEx.Message);
+            error = "Http error";
+        }
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while deleting note: {Message}", jsonEx.Message);
+            error = "JSon parsing error.";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while deleting note: {Message}", ex.Message);
+            error = "Unexpected error";
+        }
+        return new()
+        {
+            Details = error
+        };
+    }
+
+    public async Task<Error?> DeleteNoteLineAsync(int noteId, int lineId)
+    {
+        string? error;
+        try
+        {
+            var result = await HttpClient.DeleteAsync(NotesEndpoint + "/" + noteId + "/lines/" + lineId);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return result.Content.ReadFromJsonAsync<Error>().Result;
+            }
+
+            return null;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, "HTTP request error while deleting note line: {Message}", httpEx.Message);
+            error = "Http error";
+        }
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while deleting note line: {Message}", jsonEx.Message);
+            error = "JSon parsing error.";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while deleting note line: {Message}", ex.Message);
+            error = "Unexpected error";
+        }
+        return new()
+        {
+            Details = error
+        };
+    }
+
+    public async Task<Error?> DeleteFolderAsync(int folderId)
+    {
+        string? error;
+        try
+        {
+            var result = await HttpClient.DeleteAsync(FoldersEndpoint + "/" + folderId);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return result.Content.ReadFromJsonAsync<Error>().Result;
+            }
+
+            return null;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, "HTTP request error while deleting folder: {Message}", httpEx.Message);
+            error = "Http error";
+        }
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while deleting folder: {Message}", jsonEx.Message);
+            error = "JSon parsing error.";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while deleting folder: {Message}", ex.Message);
             error = "Unexpected error";
         }
         return new()

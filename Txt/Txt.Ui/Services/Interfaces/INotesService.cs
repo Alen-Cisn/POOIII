@@ -8,6 +8,8 @@ public interface INotesService
 {
     public Task<Error?> UpdateNoteLineAsync(int id, int noteId, string content, int orderIndex);
     public Task<NoteDto?> GetNoteAsync(int id);
+    public Task<Error?> DeleteNoteAsync(int id);
+    public Task<Error?> DeleteNoteLineAsync(int noteId, int lineId);
     public Task<FolderDto?> GetRootFolderAsync();
     public Task<IEnumerable<NoteDto>> GetNotesByParentIdAsync(int parentId);
     public Task<IEnumerable<NoteLineDto>> GetNoteLinesByNoteIdAsync(int noteId);
@@ -16,4 +18,5 @@ public interface INotesService
     public Task<Error?> CreateNoteAsync(string name, int parentId);
     public Task<Error?> UpdateFolderAsync(int id, string name, int? parentId);
     public Task<Error?> CreateFolderAsync(string name, int? parentId);
+    public Task<Error?> DeleteFolderAsync(int id);
 }

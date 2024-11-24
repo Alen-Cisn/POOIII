@@ -1,12 +1,14 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using Markdig.Helpers;
+using Microsoft.AspNetCore.Components;
 using Txt.Shared.Dtos;
 using Txt.Ui.Services.HttpClients.Interfaces;
 using Txt.Ui.Services.Interfaces;
 
 namespace Txt.Ui.Services;
 
-public class AccountService(ITxtApiClientService clientService, ILogger<AccountService> logger) : IAccountService
+public class AccountService(ITxtApiClientService clientService, ILogger<AccountService> logger, NavigationManager navigationManager) : IAccountService
 {
     private HttpClient HttpClient { get; init; } = clientService.HttpClient;
 
@@ -43,6 +45,10 @@ public class AccountService(ITxtApiClientService clientService, ILogger<AccountS
         catch (HttpRequestException httpEx)
         {
             logger.LogError(httpEx, "HTTP request error while fetching claims: {Message}", httpEx.Message);
+            if (httpEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                navigationManager.NavigateTo("/login");
+            }
         }
         catch (JsonException jsonEx)
         {

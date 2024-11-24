@@ -68,4 +68,22 @@ public class LinesController(IMediator mediator) : ControllerBase
             Ok,
             BadRequest
             );
+
+    /// <summary>
+    /// Deletes a specific line within a specified note.
+    /// </summary>
+    /// <param name="noteId">The ID of the note from which the line will be deleted.</param>
+    /// <param name="lineId">The ID of the line to delete.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
+    /// <returns>
+    /// A 200 OK response containing a success message as a string,
+    /// or a 400 Bad Request response containing error information.
+    /// </returns>
+    [HttpDelete("{lineId:int}")]
+    public async Task<ActionResult<string>> Delete(int noteId, int lineId, CancellationToken cancellationToken)
+        => (await mediator.Send(new DeleteNoteLineCommand() { NoteId = noteId, LineId = lineId }, cancellationToken))
+            .Match<ActionResult<string>>(
+            successMessage => Ok(successMessage),
+            error => BadRequest(error)
+            );
 }

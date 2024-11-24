@@ -45,6 +45,18 @@ public class NotesModuleRepository(
         NotesRepository.Delete(note);
     }
 
+    public void DeleteFolder(Folder folder)
+    {
+        var childrenNotes = NotesRepository.FindWhere(note => note.ParentId == folder.Id);
+        NotesRepository.DeleteRange(childrenNotes);
+        var childrenFolders = FoldersRepository.FindWhere(f => f.ParentId == folder.Id);
+        foreach (var childFolder in childrenFolders)
+        {
+            DeleteFolder(childFolder);
+        }
+        FoldersRepository.Delete(folder);
+    }
+
     public void DeleteNoteLine(NoteLine noteLine)
         => NoteLinesRepository.Delete(noteLine);
 

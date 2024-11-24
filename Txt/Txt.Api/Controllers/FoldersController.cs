@@ -52,7 +52,7 @@ public class FoldersController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<FolderDto>> Post([FromBody] CreateFolderCommand command)
         => (await mediator.Send(command)).Match<ActionResult<FolderDto>>(
-            note => Ok(note),
+            folder => Ok(folder),
             error => BadRequest(error)
             );
 
@@ -67,7 +67,22 @@ public class FoldersController(IMediator mediator) : ControllerBase
     [HttpPut]
     public async Task<ActionResult<FolderDto>> Put([FromBody] UpdateFolderCommand command)
         => (await mediator.Send(command)).Match<ActionResult<FolderDto>>(
-            note => Ok(note),
+            folder => Ok(folder),
+            error => BadRequest(error)
+            );
+
+    /// <summary>
+    /// Deletes a folder based on the provided command.
+    /// </summary>
+    /// <param name="command">The command containing the ID of the folder to be deleted.</param>
+    /// <returns>
+    /// A 200 OK response containing the name of the deleted folder as a string,
+    /// or a 400 Bad Request response containing error information.
+    /// </returns>
+    [HttpDelete(@"{id:int}")]
+    public async Task<ActionResult<string>> Delete(int id)
+        => (await mediator.Send(new DeleteFolderCommand() { FolderId = id })).Match<ActionResult<string>>(
+            folderName => Ok(folderName),
             error => BadRequest(error)
             );
 }

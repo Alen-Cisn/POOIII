@@ -1,0 +1,142 @@
+@using Txt.Shared.ErrorModels
+@using Txt.Ui.Services.Interfaces
+@using Txt.Ui.Shared
+
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject INotesService NotesService
+
+<MudMenu Icon="@Icons.Material.Filled.MoreVert" Class="position-absolute mr-0 end-0" Dense="true"
+    AriaLabel="Open folder menu" title="Menu" AnchorOrigin="Origin.CenterRight" TransformOrigin="Origin.TopLeft"
+    Size="Size.Small">
+    @if (FolderOrNote.Type == FolderOrNote.TypeEnum.Folder)
+    {
+        <MudMenuItem>
+            <MudIconButton Icon="@Icons.Material.Filled.Folder" Variant="Variant.Filled" Color="Color.Primary"
+                Size="Size.Small" title="Add folder" OnClick="OnFolderAdd" />
+        </MudMenuItem>
+        <MudMenuItem>
+            <MudIconButton Icon="@Icons.Material.Filled.Note" Variant="Variant.Filled" Color="Color.Primary"
+                Size="Size.Small" title="Add note" OnClick="OnNoteAdd" />
+        </MudMenuItem>
+    }
+    <MudMenuItem>
+        <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary"
+            Size="Size.Small" title="Edit" />
+    </MudMenuItem>
+    <MudMenuItem>
+        <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary"
+            Size="Size.Small" title="Delete" OnClick="OnDelete" />
+    </MudMenuItem>
+</MudMenu>
+
+@code
+{
+    [Parameter]
+    public FolderOrNote FolderOrNote { get; set; }
+
+    [Parameter]
+    public EventCallback OnFolderOrNoteChange { get; set; }
+
+    async Task OnFolderAdd()
+    {
+        var folderName = await GetNameAndConfirmAdd("Create new folder");
+        if (folderName != null)
+        {
+            var error = await NotesService.CreateFolderAsync(folderName, FolderOrNote.Id);
+
+            if (error != null)
+            {
+                Snackbar.Add(error.Details, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add(FolderOrNote.Name + " was created.", Severity.Success);
+                await OnFolderOrNoteChange.InvokeAsync();
+            }
+        }
+    }
+
+    async Task OnNoteAdd()
+    {
+        var folderName = await GetNameAndConfirmAdd("Create new note");
+        if (folderName != null)
+        {
+            var error = await NotesService.CreateNoteAsync(folderName, FolderOrNote.Id);
+
+            if (error != null)
+            {
+                Snackbar.Add(error.Details, Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add(FolderOrNote.Name + " was created.", Severity.Success);
+                await OnFolderOrNoteChange.InvokeAsync();
+            }
+        }
+    }
+
+    async Task<string?> GetNameAndConfirmAdd(string promptTitle)
+    {
+        IDialogReference dialogResult = DialogService.Show<DialogFolderOrNote>(promptTitle);
+        var result = await dialogResult.Result;
+
+        if (result?.Canceled ?? true)
+        {
+            return null;
+        }
+        var folderOrNote = result.Data as FolderOrNote;
+
+        return folderOrNote?.Name;
+    }
+
+    async Task OnDelete()
+    {
+        Error? error = null;
+        if (FolderOrNote.Type == FolderOrNote.TypeEnum.Folder)
+        {
+
+
+            var parameters = new DialogParameters
+{
+{ "ContentText", string.Format("Do you really want to delete the folder {0}? All subfolders and notes will be deleted",
+FolderOrNote.Name) },
+{ "ButtonText", "Yes" }
+};
+
+            var dialogResult = DialogService.Show<DialogConfirm>("Confirm", parameters);
+            var result = await dialogResult.Result;
+            if (!result?.Canceled ?? false)
+            {
+                error = await NotesService.DeleteFolderAsync(FolderOrNote.Id);
+            }
+        }
+        else
+        {
+
+            var parameters = new DialogParameters
+{
+{ "ContentText", string.Format("Do you really want to delete the note {0}?",
+FolderOrNote.Name) },
+{ "ButtonText", "Yes" }
+};
+
+            var dialogResult = DialogService.Show<DialogConfirm>("Confirm", parameters);
+            var result = await dialogResult.Result;
+            if (!result?.Canceled ?? false)
+            {
+                error = await NotesService.DeleteNoteAsync(FolderOrNote.Id);
+            }
+        }
+
+        if (error != null)
+        {
+            Snackbar.Add(error.Details, Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add(FolderOrNote.Name + " was deleted.", Severity.Success);
+            await OnFolderOrNoteChange.InvokeAsync();
+        }
+    }
+}

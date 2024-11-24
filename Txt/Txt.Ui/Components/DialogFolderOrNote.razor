@@ -1,0 +1,21 @@
+@using MudBlazor
+@using Txt.Ui.Shared
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="folderOrNote.Name" Label="Name" Required="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Submit" Color="Color.Primary">Submit</MudButton>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private FolderOrNote folderOrNote = new FolderOrNote();
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(folderOrNote));
+    void Cancel() => MudDialog.Cancel();
+}

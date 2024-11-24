@@ -7,6 +7,8 @@
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+            OnClick="@ToggleDrawer" />
         <MudText>
             <h1>Txt</h1>
         </MudText>
@@ -14,7 +16,7 @@
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/Alen-Cisn/POOIII/tree/main/Txt"
             Target="_blank" />
     </MudAppBar>
-    <NavMenu />
+    <NavMenu @bind-Open="@_open" />
     <MudMainContent>
         @Body
     </MudMainContent>
@@ -22,6 +24,13 @@
 
 @code
 {
+    private bool _open = false;
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+
     public static MudTheme _theme = new()
         {
             PaletteLight = new()

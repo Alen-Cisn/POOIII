@@ -179,3 +179,13 @@ code {
     font-family: 'Source Code Pro', monospace;
     text-transform: uppercase;
 }
+
+/* MudBlazor */
+.mud-treeview-group {
+    margin-inline-start: 8px !important;
+    margin-left: 8px !important;
+}
+
+.mud-treeview-item-arrow {
+    width: 0.7rem !important;
+}

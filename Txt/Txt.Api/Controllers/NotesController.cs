@@ -64,4 +64,19 @@ public class NotesController(IMediator mediator) : ControllerBase
             note => Ok(note),
             error => BadRequest(error)
             );
+
+    /// <summary>
+    /// Deletes a note based on the provided command.
+    /// </summary>
+    /// <param name="command">The command containing the ID of the note to be deleted.</param>
+    /// <returns>
+    /// A 200 OK response containing the name of the deleted note as a string,
+    /// or a 400 Bad Request response containing error information.
+    /// </returns>
+    [HttpDelete(@"{id:int}")]
+    public async Task<ActionResult<string>> Delete(int id)
+        => (await mediator.Send(new DeleteNoteCommand() { NoteId = id })).Match<ActionResult<string>>(
+            noteName => Ok(noteName),
+            error => BadRequest(error)
+            );
 }
