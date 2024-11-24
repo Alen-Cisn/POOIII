@@ -8,6 +8,7 @@ public interface INotesService
 {
     public Task<Error?> UpdateNoteLineAsync(int id, int noteId, string content, int orderIndex);
     public Task<NoteDto?> GetNoteAsync(int id);
+    public Task<NoteDto?> GetNoteAsync(string path);
     public Task<Error?> DeleteNoteAsync(int id);
     public Task<Error?> DeleteNoteLineAsync(int noteId, int lineId);
     public Task<FolderDto?> GetRootFolderAsync();

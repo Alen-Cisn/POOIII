@@ -25,11 +25,11 @@ public class CreateNoteLineCommandHandler(INotesModuleRepository notesModuleRepo
                 OrderIndex = request.OrderIndex,
             };
 
-            var entry = notesModuleRepository.CreateNoteLine(note);
+            var entity = notesModuleRepository.CreateNoteLine(note);
 
             await notesModuleRepository.SaveAsync(cancellationToken);
 
-            return new(mapper.Map<NoteLineDto>(entry.Entity));
+            return new(mapper.Map<NoteLineDto>(entity));
         }
         catch (Exception ex)
         {

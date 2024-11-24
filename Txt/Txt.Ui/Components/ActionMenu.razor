@@ -22,7 +22,7 @@
     }
     <MudMenuItem>
         <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary"
-            Size="Size.Small" title="Edit" />
+            Size="Size.Small" title="Edit" OnClick="OnEdit" />
     </MudMenuItem>
     <MudMenuItem>
         <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary"
@@ -76,9 +76,59 @@
         }
     }
 
-    async Task<string?> GetNameAndConfirmAdd(string promptTitle)
+    async Task OnEdit()
     {
-        IDialogReference dialogResult = DialogService.Show<DialogFolderOrNote>(promptTitle);
+        if (FolderOrNote.Type == FolderOrNote.TypeEnum.Note)
+        {
+            var folderName = await GetNameAndConfirmAdd("Edit folder");
+            if (folderName != null)
+            {
+                var error = await NotesService.UpdateFolderAsync(FolderOrNote.Id, folderName, FolderOrNote.ParentId);
+
+                if (error != null)
+                {
+                    Snackbar.Add(error.Details, Severity.Error);
+                }
+                else
+                {
+                    Snackbar.Add(FolderOrNote.Name + " was edited.", Severity.Success);
+                    await OnFolderOrNoteChange.InvokeAsync();
+                }
+            }
+        }
+        else
+        {
+            var folderName = await GetNameAndConfirmAdd("Edit note");
+            if (folderName != null)
+            {
+                var error = await NotesService.UpdateNoteAsync(FolderOrNote.Id, folderName, FolderOrNote.ParentId!.Value);
+
+                if (error != null)
+                {
+                    Snackbar.Add(error.Details, Severity.Error);
+                }
+                else
+                {
+                    Snackbar.Add(FolderOrNote.Name + " was edited.", Severity.Success);
+                    await OnFolderOrNoteChange.InvokeAsync();
+                }
+            }
+        }
+    }
+
+    async Task<string?> GetNameAndConfirmAdd(string promptTitle, bool setCurrentFolderOrNote = false)
+    {
+        var dialogParameters = new DialogParameters();
+        if (setCurrentFolderOrNote)
+        {
+            dialogParameters.Add("folderOrNote", FolderOrNote);
+        }
+
+        IDialogReference dialogResult = DialogService
+        .Show<DialogFolderOrNote>(
+        promptTitle,
+        dialogParameters
+        );
         var result = await dialogResult.Result;
 
         if (result?.Canceled ?? true)

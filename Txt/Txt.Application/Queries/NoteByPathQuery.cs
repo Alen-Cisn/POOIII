@@ -9,14 +9,16 @@ using Txt.Shared.Queries;
 
 namespace Txt.Application.Queries;
 
-public class NoteByIdQueryHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
-    : IRequestHandler<NoteByIdQuery, NoteDto>
+public class NoteByPathQueryHandler(INotesModuleRepository notesModuleRepository, IMapper mapper)
+    : IRequestHandler<NoteByPathQuery, NoteDto>
 {
-    public async Task<NoteDto> Handle(NoteByIdQuery request, CancellationToken cancellationToken)
+    public async Task<NoteDto> Handle(NoteByPathQuery request, CancellationToken cancellationToken)
     {
         Note notes = await notesModuleRepository.FindNotesWhere(note =>
-            note.Id == request.NoteId
-        ).FirstOrDefaultAsync(cancellationToken: cancellationToken)
+            note.Path == request.Path
+        )
+        .Include(note => note.Lines)
+        .FirstOrDefaultAsync(cancellationToken: cancellationToken)
             ?? throw new NotFoundException("Note not found.");
 
         return mapper.Map<NoteDto>(notes);

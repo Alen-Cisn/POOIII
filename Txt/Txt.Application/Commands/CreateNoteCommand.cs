@@ -35,11 +35,11 @@ public class CreateNoteCommandHandler(INotesModuleRepository notesModuleReposito
                 Path = folder.Path + "/" + request.Name
             };
 
-            EntityEntry<Note> entry = notesModuleRepository.CreateNote(note);
+            Note entity = notesModuleRepository.CreateNote(note);
 
             await notesModuleRepository.SaveAsync(cancellationToken);
 
-            return new(mapper.Map<NoteDto>(entry.Entity));
+            return new(mapper.Map<NoteDto>(entity));
         }
         catch (Exception ex)
         {

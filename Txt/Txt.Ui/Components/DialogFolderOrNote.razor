@@ -14,7 +14,8 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    private FolderOrNote folderOrNote = new FolderOrNote();
+    [Parameter]
+    public FolderOrNote folderOrNote { get; set; } = new FolderOrNote();
 
     void Submit() => MudDialog.Close(DialogResult.Ok(folderOrNote));
     void Cancel() => MudDialog.Cancel();

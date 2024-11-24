@@ -27,7 +27,6 @@ public class UpdateNoteCommandHandler(INotesModuleRepository notesModuleReposito
 
             note.Id = request.NoteId;
             note.Name = request.Name;
-            note.ParentId = request.ParentId;
 
             if (note.ParentId != request.ParentId)
             {
@@ -37,6 +36,8 @@ public class UpdateNoteCommandHandler(INotesModuleRepository notesModuleReposito
                     ?? throw new ValidationException("Given parent folder doesn't exist.");
                 note.Path = folder.Path + "/" + request.Name;
             }
+
+            note.ParentId = request.ParentId;
 
             notesModuleRepository.UpdateNote(note);
 

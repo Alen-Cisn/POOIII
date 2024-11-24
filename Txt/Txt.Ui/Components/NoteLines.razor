@@ -16,19 +16,7 @@
 
 @code {
     [Parameter]
-    public IEnumerable<NoteLineDto> Lines { get; set; } = new NoteLineDto[2]
-    {
-new NoteLineDto() {
-Content = "##Tremendo!",
-NoteId=1,
-OrderIndex=2,
-},
-new NoteLineDto() {
-Content = "##Fenciona!",
-NoteId=1,
-OrderIndex=2,
-},
-    };
+    public IEnumerable<NoteLineDto> Lines { get; set; }
 
     [Parameter]
     public int NoteId { get; set; }

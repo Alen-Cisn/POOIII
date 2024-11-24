@@ -1,26 +1,53 @@
-@page "/note"
+@page "/note/{*path}"
+@using Txt.Shared.Dtos
+@using Txt.Ui.Services.Interfaces
 @layout MainLayout
+@inject INotesService NotesService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
 
-@attribute [AllowAnonymous]
+@if (note != null)
+{
+    <MudText HtmlTag="h1" Typo="Typo.h1">@note.Name</MudText>
+    <MudPaper>
+        <header>
+            @note.Name
+        </header>
 
-
-<h1>
-    Hola
-</h1>
-<article>
-    <header>
-        oo
-    </header>
-    <p>
-        <NoteLines></NoteLines>
-    </p>
-</article>
+        <NoteLines Lines="note.Lines"></NoteLines>
+    </MudPaper>
+}
+else
+{
+    <MudSkeleton Height="3rem" />
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
+}
 @code {
-    protected override Task OnInitializedAsync()
-    {
-        return Task.Run(() =>
-        {
+    [Parameter]
+    public string path { get; set; } = null!;
 
-        });
+    private NoteDto? note { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var resultNote = await NotesService.GetNoteAsync("/" + path);
+
+        if (resultNote == null)
+        {
+            Snackbar.Add("Couldn't find a note at /" + path, Severity.Error);
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+        note = resultNote;
     }
 }

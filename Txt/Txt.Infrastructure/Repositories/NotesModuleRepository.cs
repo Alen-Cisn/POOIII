@@ -17,10 +17,10 @@ public class NotesModuleRepository(
     private NoteLinesRepository NoteLinesRepository { get; set; } = new NoteLinesRepository(context, currentUserService);
     private FoldersRepository FoldersRepository { get; set; } = new FoldersRepository(context, currentUserService);
 
-    public EntityEntry<Note> CreateNote(Note note)
+    public Note CreateNote(Note note)
         => NotesRepository.Create(note);
 
-    public Task<EntityEntry<Note>> CreateNoteAsync(Note note, CancellationToken cancellationToken = default)
+    public Task<Note> CreateNoteAsync(Note note, CancellationToken cancellationToken = default)
     {
         if (!note.Lines.Any())
         {
@@ -33,10 +33,10 @@ public class NotesModuleRepository(
         return NotesRepository.CreateAsync(note, cancellationToken);
     }
 
-    public EntityEntry<NoteLine> CreateNoteLine(NoteLine noteLine)
+    public NoteLine CreateNoteLine(NoteLine noteLine)
         => NoteLinesRepository.Create(noteLine);
 
-    public Task<EntityEntry<NoteLine>> CreateNoteLineAsync(NoteLine noteLine, CancellationToken cancellationToken = default)
+    public Task<NoteLine> CreateNoteLineAsync(NoteLine noteLine, CancellationToken cancellationToken = default)
         => NoteLinesRepository.CreateAsync(noteLine, cancellationToken);
 
     public void DeleteNote(Note note)
@@ -77,7 +77,7 @@ public class NotesModuleRepository(
     public IQueryable<Folder> FindFoldersWhere(Expression<Func<Folder, bool>> expression)
         => FoldersRepository.FindWhere(expression);
 
-    public EntityEntry<Folder> CreateFolder(Folder folder)
+    public Folder CreateFolder(Folder folder)
         => FoldersRepository.Create(folder);
 
     public void UpdateFolder(Folder folder)

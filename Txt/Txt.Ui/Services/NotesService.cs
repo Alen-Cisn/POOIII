@@ -83,6 +83,31 @@ public class NotesService(ITxtApiClientService clientService, ILogger<NotesServi
         return null;
     }
 
+    public async Task<NoteDto?> GetNoteAsync(string path)
+    {
+        try
+        {
+            var result = await HttpClient.GetAsync(NotesEndpoint + "/" + path);
+
+            result.EnsureSuccessStatusCode();
+
+            return result.Content.ReadFromJsonAsync<NoteDto>().Result!;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, "HTTP request error while fetching note: {Message}", httpEx.Message);
+        }
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while fetching note: {Message}", jsonEx.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while fetching note: {Message}", ex.Message);
+        }
+        return null;
+    }
+
     public async Task<FolderDto?> GetRootFolderAsync()
     {
         try

@@ -39,11 +39,11 @@ public class CreateFolderCommandHandler(INotesModuleRepository notesModuleReposi
                 Path = parentFolderPath + "/" + request.Name
             };
 
-            EntityEntry<Folder> entry = notesModuleRepository.CreateFolder(note);
+            Folder entity = notesModuleRepository.CreateFolder(note);
 
             await notesModuleRepository.SaveAsync(cancellationToken);
 
-            return new(mapper.Map<FolderDto>(entry.Entity));
+            return new(mapper.Map<FolderDto>(entity));
         }
         catch (Exception ex)
         {

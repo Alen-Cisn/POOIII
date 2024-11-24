@@ -18,11 +18,11 @@ public abstract class RepositoryBase<T>(ApplicationDbContext repositoryContext, 
     public IQueryable<T> FindWhere(Expression<Func<T, bool>> expression) =>
         Context.Set<T>().Where(a => a.CreatedById == currentUserService.UserId).Where(expression).AsNoTracking();
 
-    public EntityEntry<T> Create(T entity)
+    public T Create(T entity)
     {
         entity.CreatedOn = DateTime.Now;
         entity.CreatedById = currentUserService.UserId ?? throw new Exception("User not found");
-        return Context.Set<T>().Add(entity);
+        return Context.Set<T>().Add(entity).Entity;
     }
 
     public void Update(T entity)
@@ -34,13 +34,13 @@ public abstract class RepositoryBase<T>(ApplicationDbContext repositoryContext, 
 
     public void Delete(T entity) => Context.Set<T>().Remove(entity);
 
-    public async Task<EntityEntry<T>> CreateAsync(T entity, CancellationToken cancellationToken = default)
+    public async Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default)
     {
         entity.CreatedOn = DateTime.Now;
         entity.CreatedById = currentUserService.UserId ?? throw new Exception("User not found");
 
         var entry = await Context.Set<T>().AddAsync(entity, cancellationToken);
-        return entry;
+        return entry.Entity;
     }
 
     public void DeleteRange(IEnumerable<T> entities) => Context.Set<T>().RemoveRange(entities);

@@ -25,6 +25,19 @@ public class NotesController(IMediator mediator) : ControllerBase
 
 
     /// <summary>
+    /// Retrieves a specific note by its path.
+    /// </summary>
+    /// <param name="path">The path of the note to retrieve.</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a NoteDto object.
+    /// </returns>
+    [HttpGet(@"/path/{*path}")]
+    public Task<NoteDto> Get(string path, CancellationToken cancellationToken)
+        => mediator.Send(new NoteByPathQuery() { Path = path }, cancellationToken);
+
+
+    /// <summary>
     /// Retrieves a specific note by its ID.
     /// </summary>
     /// <param name="id">The ID of the note to retrieve.</param>
