@@ -10,16 +10,14 @@
         <MudTreeView T="FolderOrNote" Items="@treeItems" Dense="true">
             <ItemTemplate>
                 <MudTreeViewItem Text="@context.Value?.Name" Items="@context?.Children">
-                    <Content Context="item">
-                        <MudTreeViewItemToggleButton @bind-Expanded="@context.Expanded"
-                            Visible="@context.HasChildren" />
+                    <BodyContent Context="item">
                         <MudIcon Icon="@context.Icon" Size="Size.Small" />
                         <MudText Typo="Typo.body2" Class="text-truncate"
                             Style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                             @context?.Value?.Name
                         </MudText>
                         <ActionMenu FolderOrNote="@context?.Value" OnFolderOrNoteChange="GetFolderTree" />
-                    </Content>
+                    </BodyContent>
                 </MudTreeViewItem>
             </ItemTemplate>
         </MudTreeView>
