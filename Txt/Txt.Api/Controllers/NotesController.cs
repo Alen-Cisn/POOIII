@@ -32,9 +32,9 @@ public class NotesController(IMediator mediator) : ControllerBase
     /// <returns>
     /// A task that represents the asynchronous operation. The task result contains a NoteDto object.
     /// </returns>
-    [HttpGet(@"/path/{*path}")]
+    [HttpGet(@"/notes/path/{*path}")]
     public Task<NoteDto> Get(string path, CancellationToken cancellationToken)
-        => mediator.Send(new NoteByPathQuery() { Path = path }, cancellationToken);
+        => mediator.Send(new NoteByPathQuery() { Path = "/" + path }, cancellationToken);
 
 
     /// <summary>

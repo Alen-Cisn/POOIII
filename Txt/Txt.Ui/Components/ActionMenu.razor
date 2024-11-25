@@ -78,9 +78,9 @@
 
     async Task OnEdit()
     {
-        if (FolderOrNote.Type == FolderOrNote.TypeEnum.Note)
+        if (FolderOrNote.Type == FolderOrNote.TypeEnum.Folder)
         {
-            var folderName = await GetNameAndConfirmAdd("Edit folder");
+            var folderName = await GetNameAndConfirmAdd("Edit folder", true);
             if (folderName != null)
             {
                 var error = await NotesService.UpdateFolderAsync(FolderOrNote.Id, folderName, FolderOrNote.ParentId);
@@ -98,7 +98,7 @@
         }
         else
         {
-            var folderName = await GetNameAndConfirmAdd("Edit note");
+            var folderName = await GetNameAndConfirmAdd("Edit note", true);
             if (folderName != null)
             {
                 var error = await NotesService.UpdateNoteAsync(FolderOrNote.Id, folderName, FolderOrNote.ParentId!.Value);

@@ -37,6 +37,20 @@ public class UpdateNoteCommandHandler(INotesModuleRepository notesModuleReposito
                 note.Path = folder.Path + "/" + request.Name;
             }
 
+            if (await notesModuleRepository
+                .FindNotesWhere(n => n.Path == note.Path && n.Id != note.Id)
+                .AnyAsync(cancellationToken))
+            {
+                throw new ValidationException("Given note name already exists.");
+            }
+
+            if (await notesModuleRepository
+                .FindFoldersWhere(f => f.Path == note.Path)
+                .AnyAsync(cancellationToken))
+            {
+                throw new ValidationException("Given name already exists as a folder");
+            }
+
             note.ParentId = request.ParentId;
 
             notesModuleRepository.UpdateNote(note);

@@ -7,25 +7,26 @@
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 
-@if (note != null)
-{
-    <MudText HtmlTag="h1" Typo="Typo.h1">@note.Name</MudText>
-    <MudPaper>
+<MudPaper Class="m-5">
+
+    @if (note != null)
+    {
         <header>
-            @note.Name
+            <MudText HtmlTag="h1" Typo="Typo.h3" Class="mb-2">@note.Name</MudText>
         </header>
 
         <NoteLines Lines="note.Lines"></NoteLines>
-    </MudPaper>
-}
-else
-{
-    <MudSkeleton Height="3rem" />
-    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
-    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
-    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
-    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
-}
+    }
+    else
+    {
+        <MudSkeleton Height="3rem" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="1rem" />
+    }
+
+</MudPaper>
 @code {
     [Parameter]
     public string path { get; set; } = null!;
@@ -40,7 +41,7 @@ else
             return;
         }
 
-        var resultNote = await NotesService.GetNoteAsync("/" + path);
+        var resultNote = await NotesService.GetNoteAsync(path);
 
         if (resultNote == null)
         {

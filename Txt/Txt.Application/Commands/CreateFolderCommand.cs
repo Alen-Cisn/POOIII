@@ -32,6 +32,22 @@ public class CreateFolderCommandHandler(INotesModuleRepository notesModuleReposi
                 parentFolderPath = folder.Path;
             }
 
+            string path = parentFolderPath + "/" + request.Name;
+
+            if (await notesModuleRepository
+                .FindFoldersWhere(f => f.Path == path)
+                .AnyAsync(cancellationToken))
+            {
+                throw new ValidationException("Given folder already exists.");
+            }
+
+            if (await notesModuleRepository
+                .FindNotesWhere(n => n.Path == path)
+                .AnyAsync(cancellationToken))
+            {
+                throw new ValidationException("Given name already exists as a note.");
+            }
+
             Folder note = new()
             {
                 Name = request.Name,

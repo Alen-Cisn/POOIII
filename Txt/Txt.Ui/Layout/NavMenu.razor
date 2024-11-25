@@ -3,13 +3,15 @@
 @using Txt.Ui.Shared
 @inject ISnackbar Snackbar
 @inject INotesService NotesService
+@inject NavigationManager NavigationManager
 @inject ILogger<NavMenu> Logger
 
 <MudDrawer @bind-Open="Open" @bind-Clipmode="mode">
     <MudStack Spacing="0" Justify="Justify.SpaceBetween">
-        <MudTreeView T="FolderOrNote" Items="@treeItems" Dense="true">
+        <MudTreeView T="FolderOrNote" Items="@treeItems" Dense="true" Hover="true" Ripple="false"
+            SelectionMode="SelectionMode.SingleSelection" @bind-SelectedValue="SelectedValue">
             <ItemTemplate>
-                <MudTreeViewItem Text="@context.Value?.Name" Items="@context?.Children">
+                <MudTreeViewItem Text="@context.Value?.Name" Value="@context.Value" Items="@context?.Children">
                     <BodyContent Context="item">
                         <MudIcon Icon="@context.Icon" Size="Size.Small" />
                         <MudText Typo="Typo.body2" Class="text-truncate"
@@ -29,13 +31,43 @@
     public bool Open { get; set; } = true;
     [Parameter]
     public EventCallback<bool> OpenChanged { get; set; }
+
+    private string? Path { get; set; }
     private DrawerClipMode mode { get; set; } = DrawerClipMode.Always;
     private HashSet<TreeItemData<FolderOrNote>> treeItems = new HashSet<TreeItemData<FolderOrNote>>();
 
     protected override async Task OnInitializedAsync()
     {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+
+        string currentPath = uri.AbsolutePath;
+
+        if (currentPath.StartsWith("/note"))
+        {
+            Path = currentPath.Substring("/note".Length);
+        }
+
         await GetFolderTree();
 
+    }
+    private FolderOrNote? _selectedValue;
+
+    public FolderOrNote? SelectedValue
+    {
+        get => _selectedValue;
+        set
+        {
+            if (value != null && value.Type == FolderOrNote.TypeEnum.Note)
+            {
+                _selectedValue = value;
+                NavigationManager.NavigateTo("/note" + value.Path);
+            }
+            else
+            {
+                @* _selectedValue = null; *@
+            }
+
+        }
     }
 
     private async Task GetFolderTree()
@@ -54,7 +86,6 @@
     {
         if (rootFolder.ChildrenFolders != null && rootFolder.ChildrenFolders.Count() > 0)
         {
-
             return BuildTreeItems(rootFolder.ChildrenFolders);
         }
         else
@@ -80,14 +111,22 @@
             {
                 foreach (var note in folder.ChildrenNotes)
                 {
+                    var currentNoteValue = new FolderOrNote
+                        {
+                            Type = FolderOrNote.TypeEnum.Note,
+                            Id = note.Id,
+                            Name = note.Name,
+                            ParentId = note.ParentId,
+                            Path = note.Path
+                        };
+                    if (note.Path == Path)
+                    {
+                        _selectedValue = currentNoteValue;
+                    }
+
                     childrenItems.Add(new TreeItemData<FolderOrNote>
                         {
-                            Value = new FolderOrNote
-                            {
-                                Type = FolderOrNote.TypeEnum.Note,
-                                Id = note.Id,
-                                Name = note.Name
-                            },
+                            Value = currentNoteValue,
                             Icon = Icons.Material.Outlined.Note,
                             Children = null,
                             Expandable = false,
@@ -103,7 +142,9 @@
                     {
                         Type = FolderOrNote.TypeEnum.Folder,
                         Id = folder.Id,
-                        Name = folder.Name
+                        Name = folder.Name,
+                        ParentId = folder.ParentId,
+                        Path = folder.Path
                     },
                     Icon = Icons.Material.Outlined.Folder,
                     Children = childrenItems.ToList(),

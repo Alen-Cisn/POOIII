@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Net;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

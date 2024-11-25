@@ -11,5 +11,6 @@ public class FolderOrNote
     internal TypeEnum Type { get; set; }
     internal int Id { get; set; }
     internal string Name { get; set; } = null!;
+    internal string Path { get; set; } = null!;
     internal int? ParentId { get; set; }
 }

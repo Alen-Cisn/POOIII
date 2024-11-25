@@ -36,6 +36,29 @@ public class UpdateFolderCommandHandler(INotesModuleRepository notesModuleReposi
                     ?? throw new NotFoundException("The given parent folder doesn't exist.");
 
                 folder.ParentId = parentFolder.Id;
+                folder.Path = parentFolder.Path + "/" + request.Name;
+            }
+            else
+            {
+                int lastIndex = folder.Path.LastIndexOf('/');
+                if (lastIndex != -1)
+                {
+                    folder.Path = folder.Path[..(lastIndex + 1)] + request.Name;
+                }
+            }
+
+            if (await notesModuleRepository
+                .FindFoldersWhere(f => f.Path == folder.Path && f.Id != folder.Id)
+                .AnyAsync(cancellationToken))
+            {
+                throw new ValidationException("Given folder already exists.");
+            }
+
+            if (await notesModuleRepository
+                .FindNotesWhere(n => n.Path == folder.Path)
+                .AnyAsync(cancellationToken))
+            {
+                throw new ValidationException("Given name already exists as a note.");
             }
 
             notesModuleRepository.UpdateFolder(folder);

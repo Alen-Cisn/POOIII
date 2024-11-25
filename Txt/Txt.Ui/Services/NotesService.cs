@@ -87,7 +87,7 @@ public class NotesService(ITxtApiClientService clientService, ILogger<NotesServi
     {
         try
         {
-            var result = await HttpClient.GetAsync(NotesEndpoint + "/" + path);
+            var result = await HttpClient.GetAsync(NotesEndpoint + "/path/" + path);
 
             result.EnsureSuccessStatusCode();
 

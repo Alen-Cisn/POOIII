@@ -27,12 +27,28 @@ public class CreateNoteCommandHandler(INotesModuleRepository notesModuleReposito
                 .FirstOrDefaultAsync(cancellationToken)
                 ?? throw new ValidationException("Given parent folder doesn't exist.");
 
+            string path = folder.Path + "/" + request.Name;
+
+            if (await notesModuleRepository
+                .FindNotesWhere(note => note.Path == path)
+                .AnyAsync(cancellationToken))
+            {
+                throw new ValidationException("Given note name already exists.");
+            }
+
+            if (await notesModuleRepository
+                .FindFoldersWhere(f => f.Path == path)
+                .AnyAsync(cancellationToken))
+            {
+                throw new ValidationException("Given name already exists as a folder");
+            }
+
             Note note = new()
             {
                 Name = request.Name,
                 ParentId = request.ParentId,
                 Lines = [],
-                Path = folder.Path + "/" + request.Name
+                Path = path
             };
 
             Note entity = notesModuleRepository.CreateNote(note);

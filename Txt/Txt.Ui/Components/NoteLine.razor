@@ -2,13 +2,13 @@
 
 @if (isEditing)
 {
-        <MudTextField @bind-Value="markdownContent" @onblur="HandleBlur" @onfocus="HandleFocus" @onkeydown="HandleKeyDown" />
+    <MudTextField @bind-Value="markdownContent" @onblur="HandleBlur" @onfocus="HandleFocus" @onkeydown="HandleKeyDown" />
 }
 else
 {
-        <MudText Typo="Typo.body1" @onclick="HandleClick" focus>
-        @RenderHtml(markdownContent)
-    </MudText>
+    <MudText Typo="Typo.body1" @onclick="HandleClick" focus Style="">
+    @RenderHtml(markdownContent)
+</MudText>
 }
 
 @code {

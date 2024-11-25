@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Txt.Application.Services.Interfaces;
 using Txt.Domain.Entities;
 using Txt.Domain.Repositories.Interfaces;
@@ -81,7 +80,35 @@ public class NotesModuleRepository(
         => FoldersRepository.Create(folder);
 
     public void UpdateFolder(Folder folder)
-        => FoldersRepository.Update(folder);
+    {
+
+        FoldersRepository.Update(folder);
+        Stack<Folder> stack = new();
+
+        stack.Push(folder);
+
+        while (stack.Count != 0)
+        {
+            Folder currentFolder = stack.Pop();
+            Note[] notes = [.. NotesRepository.FindWhere(note => note.ParentId == currentFolder.Id)];
+            foreach (var note in notes)
+            {
+                note.Path = currentFolder.Path + "/" + note.Name;
+            }
+
+            NotesRepository.UpdateRange(notes);
+
+            Folder[] childFolders = [.. FoldersRepository.FindWhere(f => f.ParentId == currentFolder.Id)];
+            foreach (var childFolder in childFolders)
+            {
+                childFolder.Path = currentFolder.Path + "/" + childFolder.Name;
+                stack.Push(childFolder);
+            }
+
+            FoldersRepository.UpdateRange(childFolders);
+        }
+
+    }
 
     public Task<int> SaveAsync(CancellationToken cancellationToken = default)
         => context.SaveChangesAsync(cancellationToken);
