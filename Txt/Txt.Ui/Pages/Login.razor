@@ -56,8 +56,8 @@
 @code {
     private LoginRequest loginRequest { get; set; } = new LoginRequest();
 
-    private Task LoginSubmit()
-    => authService.LoginAsync(loginRequest.Email, loginRequest.Password);
+    private async Task LoginSubmit()
+    => await authService.LoginAsync(loginRequest.Email, loginRequest.Password);
 
     private void GoToRegister()
     => NavigationManager.NavigateTo("/register");

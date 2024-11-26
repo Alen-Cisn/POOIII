@@ -40,7 +40,7 @@ public class AuthService(
                     return;
                 }
 
-                _ = SaveAndNotifySession(result, cancellationToken);
+                await SaveAndNotifySession(result, cancellationToken);
 
                 var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
                 var queryStrings = System.Web.HttpUtility.ParseQueryString(uri.Query);

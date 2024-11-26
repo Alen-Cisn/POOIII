@@ -5,6 +5,7 @@
 @inject INotesService NotesService
 @inject NavigationManager NavigationManager
 @inject ILogger<NavMenu> Logger
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudDrawer @bind-Open="Open" @bind-Clipmode="mode">
     <MudStack Spacing="0" Justify="Justify.SpaceBetween">
@@ -38,6 +39,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
         string currentPath = uri.AbsolutePath;
@@ -47,7 +49,14 @@
             Path = currentPath.Substring("/note".Length);
         }
 
-        await GetFolderTree();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            await GetFolderTree();
+        }
+
 
     }
     private FolderOrNote? _selectedValue;
