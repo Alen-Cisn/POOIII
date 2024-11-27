@@ -17,7 +17,18 @@ public class NotesModuleRepository(
     private FoldersRepository FoldersRepository { get; set; } = new FoldersRepository(context, currentUserService);
 
     public Note CreateNote(Note note)
-        => NotesRepository.Create(note);
+    {
+        if (!note.Lines.Any())
+        {
+            note.Lines = [new NoteLine() {
+                Content = "",
+                CreatedById = currentUserService.UserId,
+                CreatedOn = DateTime.Now,
+            }];
+        }
+
+        return NotesRepository.Create(note);
+    }
 
     public Task<Note> CreateNoteAsync(Note note, CancellationToken cancellationToken = default)
     {
@@ -25,7 +36,8 @@ public class NotesModuleRepository(
         {
             note.Lines = [new NoteLine() {
                 Content = "",
-                Note = note
+                CreatedById = currentUserService.UserId,
+                CreatedOn = DateTime.Now,
             }];
         }
 

@@ -9,6 +9,9 @@
 
 <MudDrawer @bind-Open="Open" @bind-Clipmode="mode">
     <MudStack Spacing="0" Justify="Justify.SpaceBetween">
+        <MudPaper>
+
+        </MudPaper>
         <MudTreeView T="FolderOrNote" Items="@treeItems" Dense="true" Hover="true" Ripple="false"
             SelectionMode="SelectionMode.SingleSelection" @bind-SelectedValue="SelectedValue">
             <ItemTemplate>
@@ -19,7 +22,12 @@
                             Style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                             @context?.Value?.Name
                         </MudText>
-                        <ActionMenu FolderOrNote="@context?.Value" OnFolderOrNoteChange="GetFolderTree" />
+                        @if (context.Visible)
+                        {
+                            <ActionMenu FolderOrNote="@context?.Value" OnFolderOrNoteChange="GetFolderTree" />
+                        }
+
+
                     </BodyContent>
                 </MudTreeViewItem>
             </ItemTemplate>
@@ -139,7 +147,7 @@
                             Icon = Icons.Material.Outlined.Note,
                             Children = null,
                             Expandable = false,
-                            Text = note.Name // Use note name for display
+                            Text = note.Name
                         });
                 }
             }
@@ -159,7 +167,6 @@
                     Children = childrenItems.ToList(),
                     Expandable = childrenItems.Any(),
                     Text = folder.Name,
-                    Expanded = true,
                     Visible = true
                 };
             treeItems.Add(treeItem);

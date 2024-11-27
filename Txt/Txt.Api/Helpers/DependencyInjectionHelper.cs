@@ -17,6 +17,7 @@ public static class DependencyInjectionHelper
         services.AddAutoMapper(typeof(AutoMapperProfile));
         return services;
     }
+
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<INotesModuleRepository, NotesModuleRepository>();

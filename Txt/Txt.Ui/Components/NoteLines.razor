@@ -4,15 +4,11 @@
 @inject ISnackbar Snackbar
 @inject ILogger<NoteLines> Logger
 
-<MudCard>
-    <MudCardContent>
-        @foreach (var noteLine in Lines)
-        {
-            <NoteLine InitialContent="@noteLine.Content" Id="@noteLine.Id" OnLineUpdated="HandleLineUpdated"
-                OnRequestFocus="HandleRequestFocus" />
-        }
-    </MudCardContent>
-</MudCard>
+@foreach (var noteLine in Lines.OrderBy(l => l.OrderIndex))
+{
+    <NoteLine InitialContent="@noteLine.Content" Id="@noteLine.Id" OrderIndex="@noteLine.OrderIndex"
+    OnLineUpdated="HandleLineUpdated" OnRequestFocus="HandleRequestFocus" OnEnterPressed="HandleNewLine" />
+}
 
 @code {
     [Parameter]
@@ -20,8 +16,17 @@
 
     [Parameter]
     public int NoteId { get; set; }
+    [Parameter] public EventCallback OnLinesUpdated { get; set; }
 
     private int? currentFocusedId;
+
+    protected async Task OnInitializedAsync()
+    {
+        if (Lines != null && Lines.Count() == 0)
+        {
+
+        }
+    }
 
     private async Task HandleRequestFocus(int id)
     {
@@ -43,10 +48,9 @@
         }
     }
 
-    private async Task HandleLineUpdated((int Id, string Content) updatedLine)
+    private async Task HandleLineUpdated((int Id, string Content, int orderIndex) updatedLine)
     {
-        await new Task(() => { });
-        var (id, updatedContent) = updatedLine;
+        var (id, updatedContent, orderIndex) = updatedLine;
 
         NoteLineDto? line = Lines.FirstOrDefault(l => l.Id == id);
         if (line == null)
@@ -54,9 +58,16 @@
             Snackbar.Add("Line not found.", Severity.Error);
             return;
         }
-
+        currentFocusedId = null;
         line.Content = updatedContent;
         Logger.LogInformation("Note line updated!");
-        @* await NotesService.UpdateNoteLineAsync(id, NoteId, updatedContent); *@
+        await NotesService.UpdateNoteLineAsync(id, NoteId, updatedContent, orderIndex);
     }
+
+    private async Task HandleNewLine(int orderIndex)
+    {
+        await NotesService.CreateNoteLineAsync(NoteId, "", orderIndex + 1);
+        await OnLinesUpdated.InvokeAsync();
+    }
+
 }
