@@ -4,5 +4,23 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Vacio</h1>
-<h4>Seleccione una nota para visualizar</h4>
+<MudContainer Class="d-flex justify-content-center align-items-center h-100">
+    <MudCard Class="d-flex flex-column justify-content-around align-items-center h-25 w-50" Style="box-sizing: border-box;">
+        <MudCardHeader Class="align-self-start">
+            <MudText Typo="Typo.h4">Vacio</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText Typo="Typo.h5">Cree una nueva nota para comenzar</MudText>
+        </MudCardContent>
+        <MudCardActions Class="w-100 h-100 justify-content-center">
+            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Inherit" Size="Size.Large" OnClick="@OnNoteAdd" />
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code
+{
+    private void OnNoteAdd(){
+
+    }
+}
