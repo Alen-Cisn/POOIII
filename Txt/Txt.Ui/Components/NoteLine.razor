@@ -2,11 +2,12 @@
 
 @if (isEditing)
 {
-    <MudTextField @bind-Value="markdownContent" @onblur="HandleBlur" @onfocus="HandleFocus" @onkeydown="HandleKeyDown" />
+    <MudTextField AutoFocus="true" @bind-Value="markdownContent" @onblur="HandleBlur" @onfocus="HandleFocus"
+    @onkeydown="HandleKeyDown" />
 }
 else
 {
-    <MudText Typo="Typo.body1" @onclick="HandleClick" focus Style="">
+    <MudText Typo="Typo.body1" @onclick="HandleClick" focus Style="min-height: 2rem;">
     @RenderHtml(markdownContent)
 </MudText>
 }
@@ -14,8 +15,10 @@ else
 @code {
     [Parameter] public string InitialContent { get; set; } = null!;
     [Parameter] public int Id { get; set; }
-    [Parameter] public EventCallback<(int Id, string Content)> OnLineUpdated { get; set; }
+    [Parameter] public int OrderIndex { get; set; }
+    [Parameter] public EventCallback<(int Id, string Content, int OrderIndex)> OnLineUpdated { get; set; }
     [Parameter] public EventCallback<int> OnRequestFocus { get; set; }
+    [Parameter] public EventCallback<int> OnEnterPressed { get; set; }
     [Parameter] public bool IsFocused { get; set; }
 
     private string markdownContent = null!;
@@ -35,22 +38,32 @@ else
     private void HandleFocus()
     {
     }
+
     private void HandleKeyDown(KeyboardEventArgs e)
     {
-        if (e.Key == "ArrowUp")
+        _ = (e.Key, e.ShiftKey) switch
         {
-            OnRequestFocus.InvokeAsync(Id - 1);
+            ("ArrowUp", false) => OnRequestFocus.InvokeAsync(-1),
+            ("ArrowDown", false) => OnRequestFocus.InvokeAsync(1),
+            ("Enter", false) => OnEnterPressed.InvokeAsync(OrderIndex),
+            _ => null
+        };
+    }
+
+    @* if (e.Key == "ArrowUp")
+        {
+
         }
         else if (e.Key == "ArrowDown")
         {
             OnRequestFocus.InvokeAsync(Id + 1);
         }
-    }
+    } *@
 
     private async Task HandleBlur()
     {
         isEditing = false;
-        await OnLineUpdated.InvokeAsync((Id, markdownContent));
+        await OnLineUpdated.InvokeAsync((Id, markdownContent, OrderIndex));
     }
 
     private MarkupString RenderHtml(string markdown)

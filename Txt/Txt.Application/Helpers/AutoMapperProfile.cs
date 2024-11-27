@@ -22,7 +22,7 @@ public class AutoMapperProfile : Profile
             .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId));
         CreateMap<NoteLine, NoteLineDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.Note))
+            .ForMember(dest => dest.Note, opt => opt.Ignore())
             .ForMember(dest => dest.NoteId, opt => opt.MapFrom(src => src.NoteId))
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
             .ForMember(dest => dest.OrderIndex, opt => opt.MapFrom(src => src.OrderIndex));

@@ -15,7 +15,8 @@
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "https://localhost:5005"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
@@ -24,10 +25,18 @@
             "launchBrowser": {
                 "enabled": true,
                 "linux": {
-                    "command": "/usr/bin/librewolf",
+                    "command": "/usr/bin/chromium",
                 }
             }
+        },
+        {
+            "name": "Attach to Blazor WASM Debugger",
+            "type": "blazorwasm",
+            "request": "attach",
+            "url": "https://localhost:5002",
+            "browser": "chrome",
+            "timeout": 120000
         }
     ],
-    "runtimeExecutable": "/usr/bin/librewolf"
+    "runtimeExecutable": "/usr/bin/chromium"
 }

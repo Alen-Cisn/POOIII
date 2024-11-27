@@ -7,6 +7,7 @@ namespace Txt.Ui.Services.Interfaces;
 public interface INotesService
 {
     public Task<Error?> UpdateNoteLineAsync(int id, int noteId, string content, int orderIndex);
+    public Task<Error?> CreateNoteLineAsync(int noteId, string content, int orderIndex);
     public Task<NoteDto?> GetNoteAsync(int id);
     public Task<NoteDto?> GetNoteAsync(string path);
     public Task<Error?> DeleteNoteAsync(int id);

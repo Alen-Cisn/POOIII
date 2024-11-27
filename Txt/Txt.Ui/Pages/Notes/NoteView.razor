@@ -7,15 +7,13 @@
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 
-<MudPaper Class="m-5">
+<MudPaper Class="m-5 p-3">
 
     @if (note != null)
     {
-        <header>
-            <MudText HtmlTag="h1" Typo="Typo.h3" Class="mb-2">@note.Name</MudText>
-        </header>
+        <MudText HtmlTag="h1" Typo="Typo.h3" Class="mb-2">@note.Name</MudText>
 
-        <NoteLines Lines="note.Lines"></NoteLines>
+        <NoteLines Lines="note.Lines" NoteId="note.Id" OnLinesUpdated="UpdateNote"></NoteLines>
     }
     else
     {
@@ -32,8 +30,12 @@
     public string path { get; set; } = null!;
 
     private NoteDto? note { get; set; }
+    protected override async Task OnParametersSetAsync()
+    {
+        await UpdateNote();
+    }
 
-    protected override async Task OnInitializedAsync()
+    private async Task UpdateNote()
     {
         if (string.IsNullOrEmpty(path))
         {

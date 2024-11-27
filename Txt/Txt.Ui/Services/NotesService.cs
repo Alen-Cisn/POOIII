@@ -58,6 +58,47 @@ public class NotesService(ITxtApiClientService clientService, ILogger<NotesServi
         };
     }
 
+    public async Task<Error?> CreateNoteLineAsync(int noteId, string content, int orderIndex)
+    {
+        string? error;
+        try
+        {
+            HttpContent httpContent = new StringContent(
+                JsonSerializer.Serialize(new NoteLineDto()
+                {
+                    NoteId = noteId,
+                    Content = content,
+                    OrderIndex = orderIndex
+                }),
+                Encoding.UTF8,
+                "application/json");
+            var result = await HttpClient.PostAsync(NotesEndpoint + "/" + noteId + "/lines", httpContent);
+
+            result.EnsureSuccessStatusCode();
+
+            return null;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, "HTTP request error while creating note line: {Message}", httpEx.Message);
+            error = "Http error";
+        }
+        catch (JsonException jsonEx)
+        {
+            logger.LogError(jsonEx, "JSON deserialization error while creating note line: {Message}", jsonEx.Message);
+            error = "JSon parsing error.";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unexpected error occurred while creating note line: {Message}", ex.Message);
+            error = "Unexpected error";
+        }
+        return new()
+        {
+            Details = error
+        };
+    }
+
     public async Task<NoteDto?> GetNoteAsync(int id)
     {
         try

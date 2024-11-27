@@ -22,7 +22,8 @@ public class NotesModuleRepository(
         {
             note.Lines = [new NoteLine() {
                 Content = "",
-                Note = note
+                CreatedById = currentUserService.UserId,
+                CreatedOn = DateTime.Now,
             }];
         }
 
@@ -35,7 +36,8 @@ public class NotesModuleRepository(
         {
             note.Lines = [new NoteLine() {
                 Content = "",
-                Note = note
+                CreatedById = currentUserService.UserId,
+                CreatedOn = DateTime.Now,
             }];
         }
 
