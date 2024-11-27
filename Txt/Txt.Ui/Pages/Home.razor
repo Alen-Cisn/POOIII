@@ -1,8 +1,81 @@
-﻿@page "/"
+﻿@using Txt.Shared.ErrorModels
+@using Txt.Ui.Services.Interfaces
+@using Txt.Ui.Shared
+
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject INotesService NotesService
+
+@page "/"
 @attribute [AllowAnonymous]
 @layout MainLayout
 
+
+
 <PageTitle>Home</PageTitle>
 
-<h1>Vacio</h1>
-<h4>Seleccione una nota para visualizar</h4>
+<MudContainer Class="d-flex justify-content-center align-items-center h-100">
+    <MudCard Class="d-flex flex-column justify-content-around align-items-center h-auto w-50" Style="box-sizing: border-box;">
+        <MudCardHeader Class="align-self-start">
+            <MudText Typo="Typo.h4">Vacio</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText Typo="Typo.h5">Cree una nueva carpeta para comenzar</MudText>
+        </MudCardContent>
+        <MudCardActions Class="w-100 h-100 justify-content-center">
+            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Inherit" Size="Size.Large" OnClick="@OnFolderAdd" />
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code
+{
+    [Parameter]
+    public FolderOrNote FolderOrNote { get; set; }
+
+    [Parameter]
+    public EventCallback OnFolderOrNoteChange { get; set; }
+
+    async Task OnFolderAdd()
+    {
+        var folderName = await GetNameAndConfirmAdd("Create new folder");
+        if (folderName != null)
+        {
+            var error = await NotesService.CreateFolderAsync(folderName, null);
+
+            if (error != null)
+            {
+                Snackbar.Add(error.Details, Severity.Error);
+            }
+            else
+            {
+                //Snackbar.Add(FolderOrNote.Name + " was created.", Severity.Success);
+                await OnFolderOrNoteChange.InvokeAsync();
+            }
+        }
+    }
+
+    async Task<string?> GetNameAndConfirmAdd(string promptTitle, bool setCurrentFolderOrNote = false)
+    {
+        var dialogParameters = new DialogParameters();
+        if (setCurrentFolderOrNote)
+        {
+            dialogParameters.Add("folderOrNote", FolderOrNote);
+        }
+
+        IDialogReference dialogResult = DialogService
+        .Show<DialogFolderOrNote>(
+        promptTitle,
+        dialogParameters
+        );
+        var result = await dialogResult.Result;
+
+        if (result?.Canceled ?? true)
+        {
+            return null;
+        }
+        var folderOrNote = result.Data as FolderOrNote;
+
+        return folderOrNote?.Name;
+    }
+}

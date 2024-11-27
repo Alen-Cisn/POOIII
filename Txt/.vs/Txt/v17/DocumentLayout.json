@@ -3,20 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\wwwroot\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\wwwroot\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\wwwroot\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\wwwroot\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B7DC2153-681C-4A4C-B510-EA10CA9B872B}|Txt.Api\\Txt.Api.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{B7DC2153-681C-4A4C-B510-EA10CA9B872B}|Txt.Api\\Txt.Api.csproj|solutionrelative:txt.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B7DC2153-681C-4A4C-B510-EA10CA9B872B}|Txt.Api\\Txt.Api.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B7DC2153-681C-4A4C-B510-EA10CA9B872B}|Txt.Api\\Txt.Api.csproj|solutionrelative:txt.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,58 +18,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Api\\appsettings.json",
-              "RelativeDocumentMoniker": "Txt.Api\\appsettings.json",
-              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Api\\appsettings.json",
-              "RelativeToolTip": "Txt.Api\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-11-26T22:35:52.451Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\wwwroot\\appsettings.json",
-              "RelativeDocumentMoniker": "Txt.Ui\\wwwroot\\appsettings.json",
-              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\wwwroot\\appsettings.json",
-              "RelativeToolTip": "Txt.Ui\\wwwroot\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-11-26T22:32:18.62Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Api\\Program.cs",
-              "RelativeDocumentMoniker": "Txt.Api\\Program.cs",
-              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Api\\Program.cs",
-              "RelativeToolTip": "Txt.Api\\Program.cs",
-              "ViewState": "AgIAADYAAAAAAAAAAAAAAD8AAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T22:29:11.892Z",
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "Txt.Ui\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "Txt.Ui\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-11-27T19:48:09.216Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "appsettings.Development.json",
-              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\wwwroot\\appsettings.Development.json",
-              "RelativeDocumentMoniker": "Txt.Ui\\wwwroot\\appsettings.Development.json",
-              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\wwwroot\\appsettings.Development.json",
-              "RelativeToolTip": "Txt.Ui\\wwwroot\\appsettings.Development.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAALAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-11-26T22:27:18.814Z",
+              "Title": "Home.razor",
+              "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "Txt.Ui\\Pages\\Home.razor",
+              "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Pages\\Home.razor",
+              "RelativeToolTip": "Txt.Ui\\Pages\\Home.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-11-27T19:45:55.004Z",
               "EditorCaption": ""
             }
           ]

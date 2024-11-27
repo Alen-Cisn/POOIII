@@ -1,23 +1,28 @@
 ﻿@inherits LayoutComponentBase
 @attribute [Authorize]
 
-<MudThemeProvider Theme="_theme" IsDarkMode="@false" />
+<MudThemeProvider Theme="@_theme" IsDarkMode="@_darkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar>
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-            OnClick="@ToggleDrawer" />
+                       OnClick="@ToggleDrawer" />
         <MudText Typo="Typo.h3" HtmlTag="h1" Class="app-title">
             txt
         </MudText>
+
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/Alen-Cisn/POOIII/tree/main/Txt"
-            Target="_blank" />
+
+        <MudSwitch @bind-Value="_darkMode" Color="Color.Warning"
+                   ThumbIcon="@(_darkMode==true ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)"
+                   ThumbIconColor="@(_darkMode==true ? Color.Dark : Color.Dark)" />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
+                       Href="https://github.com/Alen-Cisn/POOIII/tree/main/Txt" Target="_blank" Size="Size.Large" />
     </MudAppBar>
     <NavMenu @bind-Open="@_open" />
-    <MudMainContent>
+    <MudMainContent Style="height: 100vh;">
         @Body
     </MudMainContent>
 </MudLayout>
@@ -25,6 +30,7 @@
 @code
 {
     private bool _open = false;
+    private bool _darkMode = false;
 
     private void ToggleDrawer()
     {
