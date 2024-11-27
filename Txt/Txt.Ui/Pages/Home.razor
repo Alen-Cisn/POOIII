@@ -20,24 +20,16 @@
             <MudText Typo="Typo.h4">Vacio</MudText>
         </MudCardHeader>
         <MudCardContent>
-<<<<<<< HEAD
             <MudText Typo="Typo.h5">Cree una nueva carpeta para comenzar</MudText>
         </MudCardContent>
         <MudCardActions Class="w-100 h-100 justify-content-center">
             <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Inherit" Size="Size.Large" OnClick="@OnFolderAdd" />
-=======
-            <MudText Typo="Typo.h5">Cree una nueva nota para comenzar</MudText>
-        </MudCardContent>
-        <MudCardActions Class="w-100 h-100 justify-content-center">
-            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Inherit" Size="Size.Large" OnClick="@OnNoteAdd" />
->>>>>>> 209df991ab2d17e239aa686dbfa3daf8d66bac49
         </MudCardActions>
     </MudCard>
 </MudContainer>
 
 @code
 {
-<<<<<<< HEAD
     [Parameter]
     public FolderOrNote FolderOrNote { get; set; }
 
@@ -85,9 +77,5 @@
         var folderOrNote = result.Data as FolderOrNote;
 
         return folderOrNote?.Name;
-=======
-    private void OnNoteAdd(){
-
->>>>>>> 209df991ab2d17e239aa686dbfa3daf8d66bac49
     }
 }
