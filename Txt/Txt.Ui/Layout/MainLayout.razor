@@ -13,6 +13,7 @@
             txt
         </MudText>
 
+<<<<<<< HEAD
         <MudSpacer />
 
         <MudSwitch @bind-Value="_darkMode" Color="Color.Warning"
@@ -20,6 +21,15 @@
                    ThumbIconColor="@(_darkMode==true ? Color.Dark : Color.Dark)" />
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
                        Href="https://github.com/Alen-Cisn/POOIII/tree/main/Txt" Target="_blank" Size="Size.Large" />
+=======
+        <MudSpacer/>
+
+        <MudSwitch @bind-Value="_darkMode" Color="Color.Warning" 
+            ThumbIcon="@(_darkMode==true ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)"
+            ThumbIconColor="@(_darkMode==true ? Color.Dark : Color.Dark)"/>        
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
+                       Href="https://github.com/Alen-Cisn/POOIII/tree/main/Txt" Target="_blank" Size="Size.Large"/>
+>>>>>>> 209df991ab2d17e239aa686dbfa3daf8d66bac49
     </MudAppBar>
     <NavMenu @bind-Open="@_open" />
     <MudMainContent Style="height: 100vh;">

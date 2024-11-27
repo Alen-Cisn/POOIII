@@ -24,9 +24,15 @@
               "RelativeDocumentMoniker": "Txt.Ui\\Pages\\Home.razor",
               "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Pages\\Home.razor",
               "RelativeToolTip": "Txt.Ui\\Pages\\Home.razor",
+<<<<<<< HEAD
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2024-11-27T19:45:55.004Z",
+=======
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-11-27T19:00:14.379Z",
+>>>>>>> 209df991ab2d17e239aa686dbfa3daf8d66bac49
               "EditorCaption": ""
             }
           ]

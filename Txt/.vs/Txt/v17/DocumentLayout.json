@@ -5,10 +5,13 @@
     {
       "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+<<<<<<< HEAD
     },
     {
       "AbsoluteMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|c:\\users\\marti\\documents\\universidad\\2024\\programacion orientada a objetos iii\\pooiii\\txt\\txt.ui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{03F2EDC9-1F04-436F-85F6-A4CC89680AD0}|Txt.Ui\\Txt.Ui.csproj|solutionrelative:txt.ui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+=======
+>>>>>>> 209df991ab2d17e239aa686dbfa3daf8d66bac49
     }
   ],
   "DocumentGroupContainers": [
@@ -18,6 +21,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
+<<<<<<< HEAD
           "SelectedChildIndex": 1,
           "Children": [
             {
@@ -35,15 +39,27 @@
             },
             {
               "$type": "Document",
+=======
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+>>>>>>> 209df991ab2d17e239aa686dbfa3daf8d66bac49
               "DocumentIndex": 0,
               "Title": "Home.razor",
               "DocumentMoniker": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Pages\\Home.razor",
               "RelativeDocumentMoniker": "Txt.Ui\\Pages\\Home.razor",
               "ToolTip": "C:\\Users\\marti\\Documents\\Universidad\\2024\\Programacion Orientada a Objetos III\\POOIII\\Txt\\Txt.Ui\\Pages\\Home.razor",
               "RelativeToolTip": "Txt.Ui\\Pages\\Home.razor",
+<<<<<<< HEAD
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2024-11-27T19:45:55.004Z",
+=======
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-11-27T19:00:14.379Z",
+>>>>>>> 209df991ab2d17e239aa686dbfa3daf8d66bac49
               "EditorCaption": ""
             }
           ]
